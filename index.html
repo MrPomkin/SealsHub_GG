@@ -135,6 +135,34 @@
     .menu{transform:none}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
+
+  /* онлайн */
+  .online-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .live{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:8px 14px;border-radius:999px}
+  .live i{width:8px;height:8px;border-radius:50%;background:#5fd16b;box-shadow:0 0 10px #5fd16b;animation:pulse 2s infinite}
+  .users{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .user{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;text-align:left;color:var(--text);font:inherit;transition:transform .15s,border-color .15s}
+  .user:hover{transform:translateY(-2px);border-color:var(--rc)}
+  .ava{width:52px;height:52px;border-radius:14px;background:var(--panel2);object-fit:cover;flex-shrink:0;border:2px solid var(--rc)}
+  .uinfo{min-width:0}
+  .urole{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--rc)}
+  .uname{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .udisp{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nobody{grid-column:1/-1;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:16px;padding:28px}
+  .r-default{--rc:#9aa4b1}.r-premium{--rc:#4cc3ff}.r-tester{--rc:#5fd16b}.r-owner{--rc:#f5c542}.r-stepan{--rc:#ff4d4d}
+
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px)}
+  .modal.open{display:flex}
+  .mbox{width:100%;max-width:360px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;text-align:center;position:relative;animation:pop .2s ease}
+  @keyframes pop{from{transform:scale(.94);opacity:0}}
+  .mclose{position:absolute;top:10px;right:12px;background:none;border:0;color:var(--muted);font-size:26px;cursor:pointer;line-height:1}
+  .mava{width:110px;height:110px;border-radius:26px;border:3px solid var(--rc);background:var(--panel2);object-fit:cover}
+  .mbox .urole{margin-top:12px;font-size:12px}
+  .mbox .uname{font-size:22px;font-family:Unbounded,sans-serif;margin:2px 0}
+  .mbox .btn{width:100%;justify-content:center;margin-top:16px}
+  .mlinks{display:flex;justify-content:center;gap:14px;margin-top:12px;font-size:13px}
+  .mlinks a{color:var(--muted)}
+  .note{font-size:12px;color:var(--muted);margin-top:14px}
 </style>
 </head>
 <body>
@@ -147,6 +175,7 @@
       <a href="#features">Функции</a>
       <a href="#roles">Роли</a>
       <a href="#faq">FAQ</a>
+      <a href="#online">Онлайн</a>
       <a class="cta" href="#launch" style="color:var(--accent)">Запустить</a>
     </nav>
   </div>
@@ -234,8 +263,33 @@
     <details><summary>Скрипт не запускается, что делать?</summary><p>Проверь, что скопировал строку целиком, включая скобки в конце, и что ты уже в игре MM2. Перезапусти Delta и попробуй ещё раз.</p></details>
     <details><summary>Как поменять язык?</summary><p>Язык переключается в настройках внутри меню, доступно 15 языков.</p></details>
     <details><summary>Можно получить бан?</summary><p>Любые сторонние скрипты нарушают правила Roblox, и риск бана есть всегда. Для экспериментов используй второй аккаунт.</p></details>
+    <details><summary>Как попасть в список «В сети»?</summary><p>В меню скрипта открой Settings и включи «Показывать меня на сайте». Если выключить, тебя не будет видно на сайте.</p></details>
+  </section>
+
+  <section id="online" class="reveal">
+    <div class="online-head sec-head">
+      <div><small>Онлайн</small><h2>Пользователи в сети</h2></div>
+      <div class="live"><i></i><span id="onlineCount">Загрузка…</span></div>
+    </div>
+    <div class="users" id="users"><div class="nobody">Загрузка…</div></div>
   </section>
 </main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="mbox" id="mbox" role="dialog" aria-modal="true">
+    <button class="mclose" id="mclose" aria-label="Закрыть">×</button>
+    <img class="mava" id="mava" alt="">
+    <div class="urole" id="mrole"></div>
+    <div class="uname" id="mname"></div>
+    <div class="udisp" id="mdisp"></div>
+    <a class="btn primary" id="mjoin" href="#">🎮 Зайти к игроку</a>
+    <div class="mlinks">
+      <a id="mjoin2" href="#" target="_blank" rel="noopener">Не открылось? Через сайт Roblox</a>
+      <a id="mprof" href="#" target="_blank" rel="noopener">Профиль</a>
+    </div>
+    <div class="note">Откроется Roblox и закинет тебя на тот же сервер. Если сервер заполнен, зайти не получится.</div>
+  </div>
+</div>
 
 <footer>
   <div class="wrap">🦭 Seals Hub · by MrPomkin</div>
@@ -276,6 +330,108 @@
 
   // переключатели в превью кликаются
   document.querySelectorAll(".tg").forEach(t => t.addEventListener("click", () => t.classList.toggle("on")));
+
+  // ===== пользователи в сети =====
+  const SB_URL = "https://esrtcgptxemaphbteokx.supabase.co/rest/v1/rpc/seals_list";
+  const SB_KEY = "sb_publishable_WQqiUsZmQwNnO1YeRpbm5g_voABCYox";
+  const ROLES = {
+    default:{name:"Seals User"}, premium:{name:"Premium"}, tester:{name:"Tester"},
+    owner:{name:"Owner"}, stepan:{name:"Stepan"}
+  };
+  const AVA_OK = /^https:\/\/tr\.rbxcdn\.com\/[A-Za-z0-9\/_.\-]+$/;
+  const FALLBACK_AVA = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#16202c"/><text x="20" y="27" font-size="20" text-anchor="middle">🦭</text></svg>');
+  const usersEl = document.getElementById("users");
+  const countEl = document.getElementById("onlineCount");
+  const modal = document.getElementById("modal");
+
+  function roleKey(r){ return ROLES[r] ? r : "default"; }
+  function setAva(img, url){
+    img.src = (typeof url === "string" && AVA_OK.test(url)) ? url : FALLBACK_AVA;
+    img.onerror = () => { img.onerror = null; img.src = FALLBACK_AVA; };
+  }
+  function plural(n){
+    const a = n % 10, b = n % 100;
+    if (a === 1 && b !== 11) return "игрок";
+    if (a >= 2 && a <= 4 && (b < 10 || b >= 20)) return "игрока";
+    return "игроков";
+  }
+
+  function openUser(u){
+    const rk = roleKey(u.role);
+    document.getElementById("mbox").className = "mbox r-" + rk;
+    setAva(document.getElementById("mava"), u.avatar_url);
+    document.getElementById("mrole").textContent = ROLES[rk].name;
+    document.getElementById("mname").textContent = u.username;
+    document.getElementById("mdisp").textContent = (u.display_name && u.display_name !== u.username) ? "@" + u.display_name : "";
+    const place = String(u.place_id), job = String(u.job_id), uid = String(u.user_id);
+    const okIds = /^\d+$/.test(place) && /^[A-Za-z0-9\-]{1,64}$/.test(job) && /^\d+$/.test(uid);
+    const join = document.getElementById("mjoin"), join2 = document.getElementById("mjoin2"), prof = document.getElementById("mprof");
+    if (okIds){
+      join.href = "roblox://experiences/start?placeId=" + place + "&gameInstanceId=" + encodeURIComponent(job);
+      join2.href = "https://www.roblox.com/games/start?placeId=" + place + "&gameInstanceId=" + encodeURIComponent(job);
+      prof.href = "https://www.roblox.com/users/" + uid + "/profile";
+    } else {
+      join.removeAttribute("href"); join2.removeAttribute("href"); prof.removeAttribute("href");
+    }
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  }
+  function closeModal(){ modal.classList.remove("open"); modal.setAttribute("aria-hidden", "true"); }
+  document.getElementById("mclose").addEventListener("click", closeModal);
+  modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  function render(list){
+    usersEl.innerHTML = "";
+    countEl.textContent = list.length + " " + plural(list.length) + " в сети";
+    if (!list.length){
+      const d = document.createElement("div");
+      d.className = "nobody";
+      d.textContent = "Сейчас никого нет в сети. Запусти Seals Hub и включи «Показывать меня на сайте» в настройках.";
+      usersEl.append(d);
+      return;
+    }
+    list.forEach(u => {
+      const rk = roleKey(u.role);
+      const card = document.createElement("button");
+      card.className = "user r-" + rk;
+      const img = document.createElement("img");
+      img.className = "ava"; img.alt = ""; img.loading = "lazy";
+      setAva(img, u.avatar_url);
+      const info = document.createElement("div"); info.className = "uinfo";
+      const role = document.createElement("div"); role.className = "urole"; role.textContent = ROLES[rk].name;
+      const name = document.createElement("div"); name.className = "uname"; name.textContent = u.username;
+      const disp = document.createElement("div"); disp.className = "udisp";
+      disp.textContent = (u.display_name && u.display_name !== u.username) ? "@" + u.display_name : "в игре";
+      info.append(role, name, disp);
+      card.append(img, info);
+      card.addEventListener("click", () => openUser(u));
+      usersEl.append(card);
+    });
+  }
+
+  async function loadOnline(){
+    try {
+      const r = await fetch(SB_URL, {
+        method:"POST",
+        headers:{ "apikey":SB_KEY, "Content-Type":"application/json" },
+        body:"{}"
+      });
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+      render(Array.isArray(data) ? data : []);
+    } catch {
+      countEl.textContent = "Нет связи";
+      if (!usersEl.querySelector(".user")){
+        usersEl.innerHTML = "";
+        const d = document.createElement("div");
+        d.className = "nobody"; d.textContent = "Не удалось загрузить список. Попробуй обновить страницу.";
+        usersEl.append(d);
+      }
+    }
+  }
+  loadOnline();
+  setInterval(() => { if (!document.hidden) loadOnline(); }, 20000);
 
   // появление секций при прокрутке
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold:.12 });

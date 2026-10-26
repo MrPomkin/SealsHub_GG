@@ -4,270 +4,282 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Seals Hub</title>
-<meta name="description" content="Seals Hub — скрипт-хаб для Murder Mystery 2 и чат сообщества">
+<meta name="description" content="Seals Hub — скрипт-хаб для Murder Mystery 2. ESP, анимации, 15 языков. Запуск через Delta.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b0f14; --panel:#121821; --panel2:#18202b; --line:#243041;
-    --text:#e8edf3; --muted:#8a97a8; --accent:#4cc3ff; --accent2:#7cf0c8;
-    --gold:#f5c542; --danger:#ff6b6b; --radius:16px;
+    --bg:#070b10; --bg2:#0c121a; --panel:#111923; --panel2:#16202c; --line:#223042;
+    --text:#eaf0f6; --muted:#8b98a9; --accent:#4cc3ff; --accent2:#7cf0c8;
+    --role:#9aa4b1; --radius:18px;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.5}
-  a{color:var(--accent)}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 16px}
-  header{position:sticky;top:0;z-index:5;background:rgba(11,15,20,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .logo{font-family:Unbounded,sans-serif;font-weight:800;font-size:18px;letter-spacing:.5px}
-  .logo span{color:var(--accent)}
-  nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:500}
-  nav a:hover{color:var(--text)}
-  .hero{padding:72px 0 48px;text-align:center;background:radial-gradient(600px 300px at 50% 0%,rgba(76,195,255,.18),transparent)}
-  .hero h1{font-family:Unbounded,sans-serif;font-size:clamp(34px,8vw,64px);margin:0 0 12px;line-height:1.05}
-  .hero h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{color:var(--muted);font-size:18px;max-width:560px;margin:0 auto 28px}
-  .btn{display:inline-block;padding:12px 22px;border-radius:12px;font-weight:600;text-decoration:none;border:0;cursor:pointer;font-size:16px}
-  .btn.primary{background:var(--accent);color:#04121c}
-  .btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  section{padding:48px 0}
-  h2{font-family:Unbounded,sans-serif;font-size:26px;margin:0 0 20px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.55;overflow-x:hidden}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  a{color:inherit}
+
+  /* фон */
+  .bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(700px 420px at 15% -5%,rgba(76,195,255,.16),transparent 60%),
+      radial-gradient(600px 400px at 95% 10%,rgba(124,240,200,.10),transparent 60%),
+      var(--bg)}
+  .bg::after{content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:44px 44px;mask-image:linear-gradient(to bottom,#000,transparent 70%)}
+
+  header{position:sticky;top:0;z-index:10;background:rgba(7,11,16,.75);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .logo{font-family:Unbounded,sans-serif;font-weight:800;font-size:18px;text-decoration:none;display:flex;align-items:center;gap:8px}
+  .logo b{color:var(--accent)}
+  nav{display:flex;gap:6px}
+  nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;padding:8px 12px;border-radius:10px}
+  nav a:hover{color:var(--text);background:var(--panel)}
+
+  /* hero */
+  .hero{padding:80px 0 56px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  .tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--accent2);background:rgba(124,240,200,.08);border:1px solid rgba(124,240,200,.25);padding:6px 12px;border-radius:999px;margin-bottom:18px}
+  .tag i{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 10px var(--accent2);animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  h1{font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(40px,7vw,72px);line-height:1;margin:0 0 18px;letter-spacing:-1px}
+  h1 span{background:linear-gradient(100deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:18px;max-width:500px;margin:0 0 28px}
+  .btns{display:flex;flex-wrap:wrap;gap:10px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:13px;font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:linear-gradient(100deg,var(--accent),var(--accent2));color:#03121a;box-shadow:0 8px 30px rgba(76,195,255,.25)}
+  .btn.primary:hover{box-shadow:0 10px 40px rgba(76,195,255,.4)}
+  .btn.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+
+  /* превью меню */
+  .menu{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);transform:rotate(1.5deg);transition:transform .4s}
+  .menu:hover{transform:rotate(0)}
+  .menu-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
+  .menu-top strong{font-family:Unbounded,sans-serif;font-size:14px;color:var(--role);transition:color .3s}
+  .menu-top small{font-size:11px;color:var(--muted)}
+  .menu-body{display:grid;grid-template-columns:110px 1fr}
+  .tabs{border-right:1px solid var(--line);padding:10px 8px;display:flex;flex-direction:column;gap:4px}
+  .tabs span{font-size:12px;color:var(--muted);padding:7px 10px;border-radius:8px}
+  .tabs span.on{background:var(--panel2);color:var(--text);box-shadow:inset 2px 0 0 var(--role)}
+  .opts{padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+  .opt{display:flex;align-items:center;justify-content:space-between;font-size:13px}
+  .tg{width:38px;height:22px;border-radius:999px;background:#05080c;border:1px solid var(--line);position:relative;cursor:pointer;transition:background .2s}
+  .tg::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#6b7787;transition:transform .18s ease,background .2s}
+  .tg.on{background:var(--role);border-color:var(--role)}
+  .tg.on::after{transform:translateX(16px);background:#fff}
+  .slider{height:6px;border-radius:999px;background:#05080c;position:relative;margin-top:6px}
+  .slider i{position:absolute;left:0;top:0;bottom:0;width:62%;border-radius:999px;background:var(--role);transition:background .3s}
+  .slider i::after{content:"";position:absolute;right:-6px;top:-4px;width:14px;height:14px;border-radius:50%;background:#fff}
+  .rolebar{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .rolebar button{font:600 12px Inter,sans-serif;padding:6px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .rolebar button.on{color:#03121a;border-color:transparent}
+  .hint{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+
+  section{padding:64px 0}
+  .sec-head{margin-bottom:28px}
+  .sec-head small{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase}
+  h2{font-family:Unbounded,sans-serif;font-weight:700;font-size:clamp(26px,4vw,36px);margin:6px 0 0}
+
+  /* запуск */
+  .launch{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:28px}
+  .code{display:flex;align-items:stretch;gap:10px;background:#04070b;border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 16px}
+  .code code{flex:1;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--accent2);white-space:nowrap;overflow-x:auto;padding:12px 0;scrollbar-width:thin}
+  .code .btn{flex-shrink:0;padding:10px 18px}
+  .copied{background:#5fd16b !important;box-shadow:none !important}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+  .step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .step b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:rgba(76,195,255,.12);color:var(--accent);font-family:Unbounded,sans-serif;font-size:13px;margin-bottom:8px}
+  .step p{margin:0;font-size:14px;color:var(--muted)}
+  .step p strong{color:var(--text);font-weight:600}
+
+  /* функции */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-3px);border-color:rgba(76,195,255,.4)}
+  .card .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--panel2);margin-bottom:12px}
   .card h3{margin:0 0 6px;font-size:17px}
   .card p{margin:0;color:var(--muted);font-size:14px}
-  .ico{font-size:26px;margin-bottom:8px}
-  .roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-  .role{padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid var(--line)}
 
-  /* chat */
-  .chat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;height:560px;max-height:75vh}
-  .chat-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
-  .status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
-  .dot.on{background:var(--accent2)}
-  #messages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-  .msg{max-width:85%;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:8px 12px;word-wrap:break-word;overflow-wrap:anywhere}
-  .msg.mine{align-self:flex-end;background:rgba(76,195,255,.12);border-color:rgba(76,195,255,.35)}
-  .msg .meta{font-size:12px;color:var(--muted);margin-bottom:2px}
-  .msg .meta b{color:var(--accent2);font-weight:600}
-  .msg .text{white-space:pre-wrap}
-  .empty{color:var(--muted);text-align:center;margin:auto}
-  .chat-bottom{border-top:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:8px}
-  .row{display:flex;gap:8px}
-  input,textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:16px}
-  textarea{resize:none;height:44px}
-  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
-  #nick{max-width:170px}
-  .hint{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
-  #err{color:var(--danger)}
-  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px;text-align:center}
-  @media (max-width:560px){
-    nav a{margin-left:12px;font-size:14px}
-    #nick{max-width:110px}
-    .chat{height:70vh}
+  /* роли */
+  .roles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .role{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden}
+  .role::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+  .role h3{margin:0 0 6px;font-family:Unbounded,sans-serif;font-size:16px;color:var(--c)}
+  .role p{margin:0;font-size:13px;color:var(--muted)}
+
+  /* faq */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:10px}
+  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+  summary::after{content:"+";color:var(--accent);font-size:20px;line-height:1}
+  details[open] summary::after{content:"–"}
+  details p{color:var(--muted);margin:10px 0 0;font-size:14px}
+
+  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:13px;text-align:center}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;padding:48px 0 32px;gap:36px}
+    .grid{grid-template-columns:1fr 1fr}
+    .steps,.roles{grid-template-columns:1fr 1fr}
   }
+  @media (max-width:520px){
+    nav a:not(.cta){display:none}
+    .grid,.steps,.roles{grid-template-columns:1fr}
+    .launch{padding:18px}
+    .code{flex-direction:column;padding:10px}
+    .code code{white-space:pre-wrap;word-break:break-all;padding:6px 4px}
+    .code .btn{justify-content:center}
+    .menu{transform:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
 <body>
+<div class="bg"></div>
 
 <header>
   <div class="wrap">
-    <div class="logo">🦭 Seals<span>Hub</span></div>
+    <a class="logo" href="#">🦭 Seals<b>Hub</b></a>
     <nav>
       <a href="#features">Функции</a>
-      <a href="#chat">Чат</a>
+      <a href="#roles">Роли</a>
+      <a href="#faq">FAQ</a>
+      <a class="cta" href="#launch" style="color:var(--accent)">Запустить</a>
     </nav>
   </div>
 </header>
 
-<div class="hero">
-  <div class="wrap">
-    <h1><span>Seals Hub</span></h1>
-    <p>Скрипт-хаб для Murder Mystery 2. Удобное меню, анимации, ESP и 15 языков, а теперь и свой чат сообщества.</p>
-    <a class="btn primary" href="#chat">Зайти в чат</a>
-    <a class="btn ghost" href="#features">Что умеет</a>
-  </div>
-</div>
-
-<section id="features">
-  <div class="wrap">
-    <h2>Функции</h2>
-    <div class="grid">
-      <div class="card"><div class="ico">👁️</div><h3>ESP и Chams</h3><p>Подсветка игроков и упавшего пистолета.</p></div>
-      <div class="card"><div class="ico">🕺</div><h3>Анимации</h3><p>Паки анимаций с предпросмотром на своём персонаже.</p></div>
-      <div class="card"><div class="ico">🌍</div><h3>15 языков</h3><p>Меню полностью переведено, включая русский и белорусский.</p></div>
-      <div class="card"><div class="ico">📱</div><h3>Для телефона</h3><p>Удобное меню, рассчитанное на мобильные экзекуторы.</p></div>
-    </div>
-    <div class="roles">
-      <span class="role" style="color:#9aa4b1">Default</span>
-      <span class="role" style="color:var(--accent)">Premium</span>
-      <span class="role" style="color:#5fd16b">Tester</span>
-      <span class="role" style="color:var(--gold)">Owner</span>
-    </div>
-  </div>
-</section>
-
-<section id="chat">
-  <div class="wrap">
-    <h2>Чат сообщества</h2>
-    <div class="chat">
-      <div class="chat-top">
-        <strong>💬 Общий чат</strong>
-        <div class="status"><span class="dot" id="dot"></span><span id="statusText">Подключение…</span></div>
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="tag"><i></i> Murder Mystery 2 · Delta</div>
+      <h1><span>Seals Hub</span></h1>
+      <p class="lead">Скрипт-хаб для MM2 с удобным меню для телефона: ESP, паки анимаций с предпросмотром, роли со своими цветами и перевод на 15 языков.</p>
+      <div class="btns">
+        <a class="btn primary" href="#launch">⚡ Скопировать скрипт</a>
+        <a class="btn ghost" href="#features">Что умеет</a>
       </div>
-      <div id="messages"><div class="empty">Загрузка сообщений…</div></div>
-      <div class="chat-bottom">
-        <div class="row">
-          <input id="nick" maxlength="20" placeholder="Ник" autocomplete="off">
-          <textarea id="text" maxlength="500" placeholder="Сообщение…"></textarea>
-          <button class="btn primary" id="send">➤</button>
+    </div>
+
+    <div>
+      <div class="menu" id="menu">
+        <div class="menu-top"><strong>Seals Hub</strong><small id="roleName">Default</small></div>
+        <div class="menu-body">
+          <div class="tabs">
+            <span>Main</span><span class="on">ESP</span><span>Animations</span><span>Info</span>
+          </div>
+          <div class="opts">
+            <div class="opt">Player ESP <div class="tg on"></div></div>
+            <div class="opt">Chams <div class="tg on"></div></div>
+            <div class="opt">Gun ESP <div class="tg"></div></div>
+            <div class="opt">Chams Self <div class="tg"></div></div>
+            <div><div class="opt">Прозрачность</div><div class="slider"><i></i></div></div>
+          </div>
         </div>
-        <div class="hint"><span id="err"></span><span id="count">0/500</span></div>
       </div>
+      <div class="rolebar" id="rolebar">
+        <button data-c="#9aa4b1" data-n="Default" class="on">Default</button>
+        <button data-c="#4cc3ff" data-n="Premium">Premium</button>
+        <button data-c="#5fd16b" data-n="Tester">Tester</button>
+        <button data-c="#f5c542" data-n="Owner">Owner</button>
+      </div>
+      <div class="hint">Нажми на роль, и меню перекрасится, как в скрипте</div>
     </div>
   </div>
-</section>
+
+  <section id="launch" class="reveal">
+    <div class="launch">
+      <div class="sec-head"><small>Запуск</small><h2>Как запустить в Delta</h2></div>
+      <div class="code">
+        <code id="ls">loadstring(game:HttpGet("https://gist.githubusercontent.com/MrPomkin/42bdfd533f6d90cf92159a6076f906cd/raw/"))()</code>
+        <button class="btn primary" id="copy">📋 Копировать</button>
+      </div>
+      <div class="steps">
+        <div class="step"><b>1</b><p><strong>Скопируй</strong> скрипт кнопкой выше</p></div>
+        <div class="step"><b>2</b><p>Зайди в <strong>Murder Mystery 2</strong> через Delta</p></div>
+        <div class="step"><b>3</b><p>Открой экзекутор Delta и <strong>вставь</strong> скрипт</p></div>
+        <div class="step"><b>4</b><p>Нажми <strong>Execute</strong>, и меню Seals Hub откроется</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="reveal">
+    <div class="sec-head"><small>Функции</small><h2>Что внутри</h2></div>
+    <div class="grid">
+      <div class="card"><div class="ico">👁️</div><h3>ESP</h3><p>Подсветка игроков по ролям и ESP упавшего пистолета.</p></div>
+      <div class="card"><div class="ico">✨</div><h3>Chams</h3><p>Обводка сквозь стены, включая Chams на себя.</p></div>
+      <div class="card"><div class="ico">🕺</div><h3>Анимации</h3><p>Паки анимаций с превью на твоём персонаже со скином и сброс в один клик.</p></div>
+      <div class="card"><div class="ico">🌍</div><h3>15 языков</h3><p>Меню полностью переведено, от русского и белорусского до английского.</p></div>
+      <div class="card"><div class="ico">🎨</div><h3>Цвет по роли</h3><p>Меню, переключатели и слайдеры перекрашиваются в цвет твоей роли.</p></div>
+      <div class="card"><div class="ico">📱</div><h3>Для телефона</h3><p>Удобные крупные кнопки, рассчитано на мобильный Delta.</p></div>
+    </div>
+  </section>
+
+  <section id="roles" class="reveal">
+    <div class="sec-head"><small>Роли</small><h2>Роли в хабе</h2></div>
+    <div class="roles">
+      <div class="role" style="--c:#9aa4b1"><h3>Default</h3><p>Базовые функции для всех. Серое меню.</p></div>
+      <div class="role" style="--c:#4cc3ff"><h3>Premium</h3><p>Открывает премиум-кнопки и функции.</p></div>
+      <div class="role" style="--c:#5fd16b"><h3>Tester</h3><p>Премиум и окно диагностики для тестов.</p></div>
+      <div class="role" style="--c:#f5c542"><h3>Owner</h3><p>Золотое меню и полный доступ.</p></div>
+    </div>
+  </section>
+
+  <section id="faq" class="reveal">
+    <div class="sec-head"><small>FAQ</small><h2>Частые вопросы</h2></div>
+    <details><summary>Работает на телефоне?</summary><p>Да, хаб делался под мобильный Delta.</p></details>
+    <details><summary>Скрипт не запускается, что делать?</summary><p>Проверь, что скопировал строку целиком, включая скобки в конце, и что ты уже в игре MM2. Перезапусти Delta и попробуй ещё раз.</p></details>
+    <details><summary>Как поменять язык?</summary><p>Язык переключается в настройках внутри меню, доступно 15 языков.</p></details>
+    <details><summary>Можно получить бан?</summary><p>Любые сторонние скрипты нарушают правила Roblox, и риск бана есть всегда. Для экспериментов используй второй аккаунт.</p></details>
+  </section>
+</main>
 
 <footer>
-  <div class="wrap">© Seals Hub. Будь вежлив в чате, за спам и оскорбления бан.</div>
+  <div class="wrap">🦭 Seals Hub · by MrPomkin</div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (() => {
-  const SUPABASE_URL = "https://esrtcgptxemaphbteokx.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_WQqiUsZmQwNnO1YeRpbm5g_voABCYox";
-  const COOLDOWN_MS = 3000;
-  const HISTORY = 50;
-
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const $ = id => document.getElementById(id);
-  const box = $("messages"), nickEl = $("nick"), textEl = $("text"),
-        sendBtn = $("send"), errEl = $("err"), countEl = $("count");
-
-  let myId = null, lastSent = 0;
-  const seen = new Set();
-
-  const store = {
-    get(k){ try { return localStorage.getItem(k); } catch { return null; } },
-    set(k,v){ try { localStorage.setItem(k,v); } catch {} }
-  };
-  nickEl.value = store.get("sh_nick") || "";
-
-  function setStatus(on, text){
-    $("dot").classList.toggle("on", on);
-    $("statusText").textContent = text;
-  }
-  function showErr(t){ errEl.textContent = t || ""; }
-
-  function fmtTime(iso){
-    const d = new Date(iso);
-    return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
-  }
-
-  // Защита от XSS: только textContent, никакого innerHTML с данными пользователей
-  function addMessage(m){
-    if (seen.has(m.id)) return;
-    seen.add(m.id);
-    const empty = box.querySelector(".empty");
-    if (empty) empty.remove();
-
-    const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
-    const el = document.createElement("div");
-    el.className = "msg" + (m.user_id === myId ? " mine" : "");
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    const b = document.createElement("b");
-    b.textContent = m.nickname;
-    meta.append(b, " · " + fmtTime(m.created_at));
-    const text = document.createElement("div");
-    text.className = "text";
-    text.textContent = m.content;
-    el.append(meta, text);
-    box.append(el);
-    if (atBottom || m.user_id === myId) box.scrollTop = box.scrollHeight;
-  }
-
-  async function ensureAuth(){
-    const { data } = await sb.auth.getSession();
-    if (data.session) { myId = data.session.user.id; return; }
-    const { data: d, error } = await sb.auth.signInAnonymously();
-    if (error) throw error;
-    myId = d.user.id;
-  }
-
-  async function loadHistory(){
-    const { data, error } = await sb.from("messages")
-      .select("id,user_id,nickname,content,created_at")
-      .order("created_at", { ascending:false })
-      .limit(HISTORY);
-    if (error) throw error;
-    box.innerHTML = "";
-    if (!data.length) box.innerHTML = '<div class="empty">Тут пока пусто, напиши первым!</div>';
-    data.reverse().forEach(addMessage);
-    box.scrollTop = box.scrollHeight;
-  }
-
-  function subscribe(){
-    sb.channel("public:messages")
-      .on("postgres_changes", { event:"INSERT", schema:"public", table:"messages" },
-          payload => addMessage(payload.new))
-      .subscribe(status => {
-        if (status === "SUBSCRIBED") setStatus(true, "Онлайн");
-        else if (status === "CLOSED" || status === "CHANNEL_ERROR") setStatus(false, "Нет связи");
-      });
-  }
-
-  async function send(){
-    showErr("");
-    const nickname = nickEl.value.trim();
-    const content = textEl.value.trim();
-    if (nickname.length < 2) return showErr("Ник от 2 до 20 символов");
-    if (!content) return;
-    const wait = COOLDOWN_MS - (Date.now() - lastSent);
-    if (wait > 0) return showErr(`Подожди ${Math.ceil(wait/1000)} сек.`);
-
-    sendBtn.disabled = true;
-    try {
-      if (!myId) await ensureAuth();
-      store.set("sh_nick", nickname);
-      const { data, error } = await sb.from("messages")
-        .insert({ nickname, content })
-        .select("id,user_id,nickname,content,created_at")
-        .single();
-      if (error) throw error;
-      lastSent = Date.now();
-      textEl.value = ""; countEl.textContent = "0/500";
-      addMessage(data);
-    } catch (e) {
-      showErr(e.message || "Не удалось отправить");
-    } finally {
-      sendBtn.disabled = false;
+  // копирование loadstring
+  const btn = document.getElementById("copy");
+  const text = document.getElementById("ls").textContent;
+  async function copy(){
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; }
+    catch {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch {}
+      ta.remove();
     }
+    btn.textContent = ok ? "✅ Скопировано" : "Выдели вручную";
+    if (ok) btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "📋 Копировать"; btn.classList.remove("copied"); }, 2000);
   }
+  btn.addEventListener("click", copy);
 
-  sendBtn.addEventListener("click", send);
-  textEl.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  // перекраска меню по роли
+  const menu = document.documentElement;
+  document.querySelectorAll("#rolebar button").forEach(b => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll("#rolebar button").forEach(x => { x.classList.remove("on"); x.style.background = ""; });
+      b.classList.add("on"); b.style.background = b.dataset.c;
+      menu.style.setProperty("--role", b.dataset.c);
+      document.getElementById("roleName").textContent = b.dataset.n;
+    });
   });
-  textEl.addEventListener("input", () => countEl.textContent = textEl.value.length + "/500");
+  document.querySelector("#rolebar .on").style.background = "#9aa4b1";
 
-  (async () => {
-    try {
-      await ensureAuth();
-      await loadHistory();
-      subscribe();
-    } catch (e) {
-      setStatus(false, "Ошибка");
-      box.innerHTML = "";
-      const d = document.createElement("div");
-      d.className = "empty";
-      d.textContent = "Не удалось подключиться: " + (e.message || e);
-      box.append(d);
-    }
-  })();
+  // переключатели в превью кликаются
+  document.querySelectorAll(".tg").forEach(t => t.addEventListener("click", () => t.classList.toggle("on")));
+
+  // появление секций при прокрутке
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold:.12 });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 })();
 </script>
 </body>

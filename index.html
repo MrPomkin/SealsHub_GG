@@ -431,7 +431,7 @@
     }
   }
   loadOnline();
-  setInterval(() => { if (!document.hidden) loadOnline(); }, 20000);
+  setInterval(() => { if (!document.hidden) loadOnline(); }, 2000);
 
   // появление секций при прокрутке
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold:.12 });

@@ -163,6 +163,59 @@
   .mlinks{display:flex;justify-content:center;gap:14px;margin-top:12px;font-size:13px}
   .mlinks a{color:var(--muted)}
   .note{font-size:12px;color:var(--muted);margin-top:14px}
+
+  /* ===== админ ===== */
+  [hidden]{display:none!important}
+  .admin{padding-top:24px}
+  .admin .sec-head small{color:#f5c542}
+  .acard{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:22px;padding:22px;position:relative;overflow:hidden}
+  .acard::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,#f5c542,#ff9f43)}
+  .acard h3{margin:0 0 4px;font-family:Unbounded,sans-serif;font-size:17px}
+  .acard .sub{margin:0 0 16px;color:var(--muted);font-size:13px}
+  .alogin{max-width:420px}
+  .field{display:block;margin-bottom:12px}
+  .field span{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.3px}
+  .inp{width:100%;background:#04070b;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);font:500 15px Inter,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
+  .inp:focus{border-color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.15)}
+  .inp.code6{font-family:"JetBrains Mono",monospace;font-size:24px;letter-spacing:10px;text-align:center}
+  .btn.gold{background:linear-gradient(100deg,#f5c542,#ff9f43);color:#1a1203;box-shadow:0 8px 30px rgba(245,197,66,.2)}
+  .btn.gold:disabled,.btn.primary:disabled{opacity:.55;cursor:wait}
+  .btn.wide{width:100%;justify-content:center}
+  .astatus{min-height:20px;margin-top:10px;font-size:13px;color:var(--muted)}
+  .astatus.ok{color:#5fd16b}.astatus.err{color:#ff6b6b}
+  .qrwrap{display:flex;gap:16px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .qrwrap img{width:160px;height:160px;background:#fff;border-radius:14px;padding:8px}
+  .secret{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent2);word-break:break-all;background:#04070b;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px}
+  .agrid{display:grid;grid-template-columns:1fr 1.1fr;gap:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+  .chip{--rc:#9aa4b1;font:600 13px Inter,sans-serif;padding:8px 14px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
+  .chip i{width:8px;height:8px;border-radius:50%;background:var(--rc)}
+  .chip:hover{border-color:var(--rc);color:var(--text)}
+  .chip.on{background:var(--rc);border-color:var(--rc);color:#071018}
+  .chip.on i{background:#071018}
+  .chip.none.on{background:#3a2328;border-color:#ff6b6b;color:#ffb3b3}
+  .chip.none.on i{background:#ff6b6b}
+  .alist{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
+  .arow{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+  .ainit{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font:800 15px Unbounded,sans-serif;color:#071018;background:var(--rc);flex-shrink:0}
+  .ainfo{flex:1;min-width:0}
+  .ainfo a{font-weight:600;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ainfo small{color:var(--muted);font-size:12px}
+  .pill{font:700 11px Inter,sans-serif;letter-spacing:.5px;text-transform:uppercase;color:var(--rc);border:1px solid var(--rc);border-radius:999px;padding:3px 9px;flex-shrink:0}
+  .xbtn{background:none;border:1px solid var(--line);color:var(--muted);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:15px;flex-shrink:0;transition:all .15s}
+  .xbtn:hover{border-color:#ff6b6b;color:#ff6b6b}
+  .aempty{color:var(--muted);text-align:center;padding:22px;border:1px dashed var(--line);border-radius:14px;font-size:14px}
+  .abar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+  .abar b{color:#f5c542;font-weight:600}
+  .alink{background:none;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:7px 12px;font:600 13px Inter,sans-serif;cursor:pointer}
+  .alink:hover{color:var(--text);border-color:var(--muted)}
+  .madmin{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);text-align:left}
+  .madmin .mt{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#f5c542;margin-bottom:8px;text-align:center}
+  .madmin .chips{justify-content:center;margin-bottom:0}
+  .madmin .astatus{text-align:center}
+  .flock{opacity:.35;text-decoration:none;margin-left:8px;transition:opacity .15s}
+  .flock:hover{opacity:1}
+  @media (max-width:860px){.agrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -273,6 +326,55 @@
     </div>
     <div class="users" id="users"><div class="nobody">Загрузка…</div></div>
   </section>
+  <section id="admin" class="admin" hidden>
+    <div class="sec-head"><small>Админ</small><h2>Панель управления</h2></div>
+
+    <form class="acard alogin" id="aLogin" hidden autocomplete="on">
+      <h3>🔐 Вход для админа</h3>
+      <p class="sub">Почта и пароль от аккаунта Supabase, потом код 2FA.</p>
+      <label class="field"><span>Почта</span><input class="inp" id="aEmail" type="email" autocomplete="username" required></label>
+      <label class="field"><span>Пароль</span><input class="inp" id="aPass" type="password" autocomplete="current-password" required></label>
+      <button class="btn gold wide" id="aLoginBtn" type="submit">Войти</button>
+      <div class="astatus" id="aLoginMsg"></div>
+    </form>
+
+    <form class="acard alogin" id="aMfa" hidden autocomplete="off">
+      <h3>🛡️ Код подтверждения</h3>
+      <p class="sub" id="aMfaText">Введи 6-значный код из приложения-аутентификатора.</p>
+      <div id="aEnroll" hidden>
+        <div class="qrwrap">
+          <img id="aQr" alt="QR-код для приложения">
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:13px;color:var(--muted)">Не сканируется? Введи ключ вручную:</div>
+            <div class="secret" id="aSecret"></div>
+          </div>
+        </div>
+      </div>
+      <label class="field"><span>Код</span><input class="inp code6" id="aCode" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required></label>
+      <button class="btn gold wide" id="aCodeBtn" type="submit">Подтвердить</button>
+      <div class="abar"><span></span><button class="alink" id="aCancel" type="button">Выйти</button></div>
+      <div class="astatus" id="aMfaMsg"></div>
+    </form>
+
+    <div id="aPanel" hidden>
+      <div class="agrid">
+        <form class="acard" id="aGrant" autocomplete="off">
+          <h3>Выдать роль</h3>
+          <p class="sub">Впиши ник в Roblox и выбери роль. Скрипт игрока подхватит её за пару секунд.</p>
+          <label class="field"><span>Ник в Roblox</span><input class="inp" id="aNick" placeholder="например, pomi_55" maxlength="20" required></label>
+          <div class="chips" id="aChips"></div>
+          <button class="btn gold wide" id="aGrantBtn" type="submit">Выдать</button>
+          <div class="astatus" id="aGrantMsg"></div>
+        </form>
+        <div class="acard">
+          <h3>Выданные роли</h3>
+          <p class="sub">Нажми ✕, чтобы снять роль.</p>
+          <div class="alist" id="aList"><div class="aempty">Загрузка…</div></div>
+        </div>
+      </div>
+      <div class="abar"><span>Вошёл как <b id="aWho"></b></span><button class="alink" id="aOut" type="button">Выйти из админки</button></div>
+    </div>
+  </section>
 </main>
 
 <div class="modal" id="modal" aria-hidden="true">
@@ -287,12 +389,17 @@
       <a id="mjoin2" href="#" target="_blank" rel="noopener">Не открылось? Через сайт Roblox</a>
       <a id="mprof" href="#" target="_blank" rel="noopener">Профиль</a>
     </div>
+    <div class="madmin" id="mAdmin" hidden>
+      <div class="mt">👑 Роль игрока</div>
+      <div class="chips" id="mChips"></div>
+      <div class="astatus" id="mMsg"></div>
+    </div>
     <div class="note">Откроется Roblox и закинет тебя на тот же сервер. Если сервер заполнен, зайти не получится.</div>
   </div>
 </div>
 
 <footer>
-  <div class="wrap">🦭 Seals Hub · by MrPomkin</div>
+  <div class="wrap">🦭 Seals Hub · by MrPomkin<a class="flock" href="#admin" aria-label="Админ">🔐</a></div>
 </footer>
 
 <script>
@@ -357,6 +464,7 @@
   }
 
   function openUser(u){
+    if (window.SealsAdminModal) window.SealsAdminModal(u);
     const rk = roleKey(u.role);
     document.getElementById("mbox").className = "mbox r-" + rk;
     setAva(document.getElementById("mava"), u.avatar_url);
@@ -431,11 +539,289 @@
     }
   }
   loadOnline();
+  window.SealsReloadOnline = loadOnline;
   setInterval(() => { if (!document.hidden) loadOnline(); }, 2000);
 
   // появление секций при прокрутке
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold:.12 });
   document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  // ===== админ-панель: выдача ролей =====
+  // Безопасность держится на Supabase: функции проверяют вход + 2FA + список админов.
+  const SB = "https://esrtcgptxemaphbteokx.supabase.co";
+  const KEY = "sb_publishable_WQqiUsZmQwNnO1YeRpbm5g_voABCYox";
+  const ROLES = {
+    premium: { n: "Premium", c: "#4cc3ff" },
+    tester:  { n: "Tester",  c: "#5fd16b" },
+    stepan:  { n: "Stepan",  c: "#ff4d4d" },
+    none:    { n: "Снять",   c: "#9aa4b1" }
+  };
+  const $ = id => document.getElementById(id);
+  const sec = $("admin");
+  if (!sec || !window.supabase) return;
+
+  const sb = window.supabase.createClient(SB, KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, storageKey: "seals-admin" }
+  });
+
+  let isAdmin = false, factorId = null, grantRole = "premium", modalUser = null, busy = false;
+
+  function show(which){
+    ["aLogin", "aMfa", "aPanel"].forEach(id => { $(id).hidden = id !== which; });
+    sec.hidden = !which;
+  }
+  function say(el, text, ok){
+    el.textContent = text || "";
+    el.className = "astatus" + (text ? (ok ? " ok" : " err") : "");
+  }
+  function human(e){
+    const m = String((e && (e.message || e.error_description || e.msg)) || e || "");
+    if (/not admin/i.test(m)) return "Нет прав админа";
+    if (/not found/i.test(m)) return "Игрок с таким ником не найден";
+    if (/bad name/i.test(m)) return "Ник: 3–20 символов, латиница, цифры и _";
+    if (/owner/i.test(m)) return "Роль владельца менять нельзя";
+    if (/roblox api/i.test(m)) return "Roblox не ответил, попробуй ещё раз";
+    if (/invalid login|credentials/i.test(m)) return "Неверная почта или пароль";
+    if (/invalid.*(totp|code)|otp|expired/i.test(m)) return "Неверный или устаревший код";
+    if (/rate|too many/i.test(m)) return "Слишком много попыток, подожди немного";
+    return m || "Ошибка";
+  }
+  function lock(btn, on){ busy = on; if (btn) btn.disabled = on; }
+
+  function chipRow(box, current, onPick, withNone){
+    box.innerHTML = "";
+    Object.keys(ROLES).forEach(k => {
+      if (k === "none" && !withNone) return;
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (k === "none" ? " none" : "") + (k === current ? " on" : "");
+      b.style.setProperty("--rc", ROLES[k].c);
+      const dot = document.createElement("i");
+      b.append(dot, document.createTextNode(ROLES[k].n));
+      b.addEventListener("click", () => onPick(k));
+      box.append(b);
+    });
+  }
+
+  // ===== состояние входа =====
+  async function refresh(){
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session){
+      setAdmin(false);
+      show(location.hash === "#admin" ? "aLogin" : null);
+      return;
+    }
+    const { data: aal, error: aalErr } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aalErr){ show("aLogin"); say($("aLoginMsg"), human(aalErr)); return; }
+    if (aal.currentLevel !== "aal2"){ setAdmin(false); await startMfa(); return; }
+
+    const { data: ok, error } = await sb.rpc("seals_am_admin");
+    if (error || ok !== true){
+      await sb.auth.signOut();
+      setAdmin(false);
+      show("aLogin");
+      say($("aLoginMsg"), "У этого аккаунта нет прав админа");
+      return;
+    }
+    $("aWho").textContent = session.user.email || "admin";
+    setAdmin(true);
+    show("aPanel");
+    renderGrantChips();
+    loadRoles();
+    if (location.hash !== "#admin") sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function setAdmin(v){
+    isAdmin = v;
+    renderModal();
+  }
+
+  // ===== вход =====
+  $("aLogin").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy) return;
+    lock($("aLoginBtn"), true);
+    say($("aLoginMsg"), "Входим…", true);
+    const { error } = await sb.auth.signInWithPassword({ email: $("aEmail").value.trim(), password: $("aPass").value });
+    $("aPass").value = "";
+    lock($("aLoginBtn"), false);
+    if (error){ say($("aLoginMsg"), human(error)); return; }
+    say($("aLoginMsg"), "");
+    refresh();
+  });
+
+  // ===== 2FA =====
+  async function startMfa(){
+    show("aMfa");
+    say($("aMfaMsg"), "");
+    $("aCode").value = "";
+    const { data, error } = await sb.auth.mfa.listFactors();
+    if (error){ say($("aMfaMsg"), human(error)); return; }
+    const all = data.all || [];
+    const verified = all.find(f => f.factor_type === "totp" && f.status === "verified");
+    if (verified){
+      factorId = verified.id;
+      $("aEnroll").hidden = true;
+      $("aMfaText").textContent = "Введи 6-значный код из приложения-аутентификатора.";
+      $("aCode").focus();
+      return;
+    }
+    for (const f of all){
+      if (f.status !== "verified") await sb.auth.mfa.unenroll({ factorId: f.id });
+    }
+    const en = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "Seals Admin" });
+    if (en.error){ say($("aMfaMsg"), human(en.error)); return; }
+    factorId = en.data.id;
+    let qr = en.data.totp.qr_code || "";
+    if (qr.trim().startsWith("<svg")) qr = "data:image/svg+xml;utf8," + encodeURIComponent(qr);
+    $("aQr").src = qr;
+    $("aSecret").textContent = en.data.totp.secret || "";
+    $("aEnroll").hidden = false;
+    $("aMfaText").textContent = "Первый вход: отсканируй QR в Google Authenticator (или любом другом) и введи код из приложения.";
+  }
+
+  $("aMfa").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy || !factorId) return;
+    const code = $("aCode").value.replace(/\D/g, "");
+    if (code.length !== 6){ say($("aMfaMsg"), "Нужно 6 цифр"); return; }
+    lock($("aCodeBtn"), true);
+    say($("aMfaMsg"), "Проверяем…", true);
+    const { error } = await sb.auth.mfa.challengeAndVerify({ factorId, code });
+    lock($("aCodeBtn"), false);
+    if (error){ say($("aMfaMsg"), human(error)); $("aCode").select(); return; }
+    say($("aMfaMsg"), "");
+    refresh();
+  });
+
+  async function logout(){
+    await sb.auth.signOut();
+    setAdmin(false);
+    if (location.hash === "#admin") history.replaceState(null, "", location.pathname);
+    show(null);
+  }
+  $("aCancel").addEventListener("click", logout);
+  $("aOut").addEventListener("click", logout);
+
+  // ===== выдача по нику =====
+  function renderGrantChips(){
+    chipRow($("aChips"), grantRole, k => { grantRole = k; renderGrantChips(); }, true);
+    $("aGrantBtn").textContent = grantRole === "none" ? "Снять роль" : "Выдать " + ROLES[grantRole].n;
+  }
+
+  async function setRole(params){
+    const { data, error } = await sb.rpc("seals_admin_set_role", params);
+    if (error) throw error;
+    loadRoles();
+    if (window.SealsReloadOnline) window.SealsReloadOnline();
+    return data;
+  }
+
+  $("aGrant").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy) return;
+    const nick = $("aNick").value.trim();
+    if (!/^[A-Za-z0-9_]{3,20}$/.test(nick)){ say($("aGrantMsg"), human("bad name")); return; }
+    lock($("aGrantBtn"), true);
+    say($("aGrantMsg"), "Ищем игрока…", true);
+    try {
+      const r = await setRole({ p_role: grantRole, p_username: nick });
+      say($("aGrantMsg"), grantRole === "none"
+        ? "Роль снята у " + r.username
+        : r.username + " теперь " + ROLES[grantRole].n, true);
+      $("aNick").value = "";
+    } catch (err){
+      say($("aGrantMsg"), human(err));
+    }
+    lock($("aGrantBtn"), false);
+  });
+
+  // ===== список выданных =====
+  async function loadRoles(){
+    const box = $("aList");
+    const { data, error } = await sb.rpc("seals_admin_roles");
+    if (error){ box.innerHTML = ""; const d = document.createElement("div"); d.className = "aempty"; d.textContent = human(error); box.append(d); return; }
+    box.innerHTML = "";
+    if (!data || !data.length){
+      const d = document.createElement("div");
+      d.className = "aempty";
+      d.textContent = "Пока никому не выдано";
+      box.append(d);
+      return;
+    }
+    data.forEach(r => {
+      const info = ROLES[r.role] || { n: r.role, c: "#9aa4b1" };
+      const row = document.createElement("div");
+      row.className = "arow";
+      row.style.setProperty("--rc", info.c);
+      const ini = document.createElement("div");
+      ini.className = "ainit";
+      ini.textContent = (r.username || "?").charAt(0).toUpperCase();
+      const box2 = document.createElement("div");
+      box2.className = "ainfo";
+      const a = document.createElement("a");
+      a.textContent = r.username;
+      if (/^\d+$/.test(String(r.user_id))){ a.href = "https://www.roblox.com/users/" + r.user_id + "/profile"; a.target = "_blank"; a.rel = "noopener"; }
+      const sm = document.createElement("small");
+      sm.textContent = "с " + new Date(r.granted_at).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      box2.append(a, sm);
+      const pill = document.createElement("span");
+      pill.className = "pill";
+      pill.textContent = info.n;
+      const x = document.createElement("button");
+      x.className = "xbtn";
+      x.type = "button";
+      x.title = "Снять роль";
+      x.textContent = "✕";
+      x.addEventListener("click", async () => {
+        if (busy || !confirm("Снять роль " + info.n + " у " + r.username + "?")) return;
+        lock(x, true);
+        try { await setRole({ p_role: "none", p_user_id: Number(r.user_id), p_username: r.username }); }
+        catch (err){ alert(human(err)); }
+        lock(x, false);
+      });
+      row.append(ini, box2, pill, x);
+      box.append(row);
+    });
+  }
+
+  // ===== роль прямо в карточке игрока =====
+  function renderModal(){
+    const box = $("mAdmin");
+    if (!box) return;
+    box.hidden = !(isAdmin && modalUser);
+    if (box.hidden) return;
+    const cur = ROLES[modalUser.role] && modalUser.role !== "none" ? modalUser.role : "";
+    chipRow($("mChips"), cur, pickModal, !!cur);
+    say($("mMsg"), "");
+  }
+  async function pickModal(k){
+    if (busy || !modalUser) return;
+    const u = modalUser;
+    if (k === u.role) return;
+    say($("mMsg"), "Сохраняем…", true);
+    busy = true;
+    try {
+      await setRole({ p_role: k, p_user_id: Number(u.user_id), p_username: u.username });
+      u.role = k === "none" ? "default" : k;
+      $("mbox").className = "mbox r-" + u.role;
+      $("mrole").textContent = u.role === "default" ? "Seals User" : ROLES[u.role].n;
+      busy = false;
+      renderModal();
+      say($("mMsg"), k === "none" ? "Роль снята" : "Выдано: " + ROLES[k].n, true);
+    } catch (err){
+      busy = false;
+      say($("mMsg"), human(err));
+    }
+  }
+  window.SealsAdminModal = u => { modalUser = u; renderModal(); };
+
+  window.addEventListener("hashchange", refresh);
+  sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT"){ setAdmin(false); } });
+  refresh();
 })();
 </script>
 </body>

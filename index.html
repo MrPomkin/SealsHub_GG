@@ -2,395 +2,538 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seals Hub</title>
 <meta name="description" content="Seals Hub — скрипт-хаб для Murder Mystery 2. ESP, анимации, 15 языков. Запуск через Delta.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;900&family=Golos+Text:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#070b10; --bg2:#0c121a; --panel:#111923; --panel2:#16202c; --line:#223042;
-    --text:#eaf0f6; --muted:#8b98a9; --accent:#4cc3ff; --accent2:#7cf0c8;
-    --role:#9aa4b1; --radius:18px;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.55;overflow-x:hidden}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-  a{color:inherit}
+/* Arcade: пиксельная шапка → бегущая строка → пульт функций → роли → онлайн → запуск → FAQ → админка (только #admin). */
+:root{
+  --paper:#f4f5f6; --ink:#0c0c0d; --muted:#62666d; --rule:#d8dbdf; --panel:#ffffff;
+  --yellow:#facc15; --yellow-text:#a16207;
+  --ok:#15803d; --err:#dc2626;
+  --pix1:#d4d4d4; --pix2:#e5e5e5; --pix3:#c4c4c4; --pix4:#bababa;
+  --lcd:#1d2412; --lcd-ink:#d9f99d; --lcd-dim:#6b7f3a;
+  --r-default:#9aa4b1; --r-premium:#4cc3ff; --r-tester:#5fd16b; --r-owner:#f5c542; --r-stepan:#ff4d4d;
+  --display:"Rubik","Arial Black",system-ui,sans-serif;
+  --body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --pixel:"Press Start 2P","Courier New",ui-monospace,monospace;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --role:var(--r-default);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0a0a0a; --ink:#f4f4f5; --muted:#8b9099; --rule:#26282c; --panel:#141416; --yellow-text:#facc15;
+  --ok:#4ade80; --err:#f87171;
+  --pix1:#1a1a1a; --pix2:#2a2a2a; --pix3:#333333; --pix4:#111111; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0a0a0a; --ink:#f4f4f5; --muted:#8b9099; --rule:#26282c; --panel:#141416; --yellow-text:#facc15;
+  --ok:#4ade80; --err:#f87171;
+  --pix1:#1a1a1a; --pix2:#2a2a2a; --pix3:#333333; --pix4:#111111; color-scheme:dark}
 
-  /* фон */
-  .bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
-    background:
-      radial-gradient(700px 420px at 15% -5%,rgba(76,195,255,.16),transparent 60%),
-      radial-gradient(600px 400px at 95% 10%,rgba(124,240,200,.10),transparent 60%),
-      var(--bg)}
-  .bg::after{content:"";position:absolute;inset:0;
-    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-    background-size:44px 44px;mask-image:linear-gradient(to bottom,#000,transparent 70%)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--body);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--paper)}
+img{max-width:100%}
+[hidden]{display:none!important}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.px{font-family:var(--pixel);text-transform:uppercase;letter-spacing:.03em}
 
-  header{position:sticky;top:0;z-index:10;background:rgba(7,11,16,.75);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-  header .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
-  .logo{font-family:Unbounded,sans-serif;font-weight:800;font-size:18px;text-decoration:none;display:flex;align-items:center;gap:8px}
-  .logo b{color:var(--accent)}
-  nav{display:flex;gap:6px}
-  nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;padding:8px 12px;border-radius:10px}
-  nav a:hover{color:var(--text);background:var(--panel)}
+/* ===== Retro Button (21st.dev · serafimcloud/retro-button) ===== */
+.rb{position:relative;display:inline-flex;align-items:center;justify-content:center;border:2px solid transparent;border-radius:2px;background:#010101;box-shadow:1px 1px 1px rgba(255,255,255,.6);padding:0;cursor:pointer;font:inherit;color:#fff;text-decoration:none;transition:transform .15s;
+  --bg:#f97316;--bg-a:#ea580c;--sl:#fdba74;--sd:#c2410c}
+.rb>span{display:inline-block;width:100%;border-radius:9px;padding:.6rem 1.1rem;text-transform:uppercase;letter-spacing:.03em;text-align:center;background:var(--bg);transition:all .2s;font:400 10px/1.2 var(--pixel);
+  box-shadow:inset 1px 1px 1px var(--sl),inset -1px -1px 1px var(--sd),2px 2px 4px #000}
+.rb:hover{transform:translateY(-2px)}
+.rb:active,.rb[aria-pressed="true"]{transform:none}
+.rb:active>span,.rb[aria-pressed="true"]>span{transform:scale(.98);background:var(--bg-a);box-shadow:inset 0 0 4px #000,inset 1px 1px 1px transparent,inset -1px -1px 1px transparent,2px 2px 4px transparent}
+.rb:disabled{opacity:.55;cursor:wait;transform:none}
+.rb.yellow{color:#1a1400;--bg:#facc15;--bg-a:#eab308;--sl:#fef08a;--sd:#a16207}
+.rb.dark{--bg:#404040;--bg-a:#262626;--sl:#a3a3a3;--sd:#171717}
+.rb.white{color:#000;--bg:#e5e5e5;--bg-a:#d4d4d4;--sl:#fff;--sd:#737373}
+.rb.rc{color:#111;--bg:var(--rc);--bg-a:color-mix(in srgb,var(--rc) 78%,#000);--sl:color-mix(in srgb,var(--rc) 45%,#fff);--sd:color-mix(in srgb,var(--rc) 55%,#000)}
+.rb.big>span{padding:1rem 1.5rem;font-size:12px}
+.rb.wide{width:100%}
+.rb.copied>span{background:#5fd16b;color:#03140a}
 
-  /* hero */
-  .hero{padding:80px 0 56px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
-  .tag{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--accent2);background:rgba(124,240,200,.08);border:1px solid rgba(124,240,200,.25);padding:6px 12px;border-radius:999px;margin-bottom:18px}
-  .tag i{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 10px var(--accent2);animation:pulse 2s infinite}
-  @keyframes pulse{50%{opacity:.35}}
-  h1{font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(40px,7vw,72px);line-height:1;margin:0 0 18px;letter-spacing:-1px}
-  h1 span{background:linear-gradient(100deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .lead{color:var(--muted);font-size:18px;max-width:500px;margin:0 0 28px}
-  .btns{display:flex;flex-wrap:wrap;gap:10px}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:13px;font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s}
-  .btn:active{transform:scale(.97)}
-  .btn.primary{background:linear-gradient(100deg,var(--accent),var(--accent2));color:#03121a;box-shadow:0 8px 30px rgba(76,195,255,.25)}
-  .btn.primary:hover{box-shadow:0 10px 40px rgba(76,195,255,.4)}
-  .btn.ghost{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+/* ===== навигация ===== */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+nav.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:900 19px/1 var(--display);letter-spacing:-.01em}
+.brand canvas{width:28px;height:28px;image-rendering:pixelated;border-radius:6px;background:var(--yellow);transition:transform .3s}
+.brand:hover canvas{transform:rotate(-12deg) scale(1.1)}
+.links{display:flex;gap:22px;font-size:14px;color:var(--muted);align-items:center}
+.links a{text-decoration:none;position:relative}
+.links a::after{content:"";position:absolute;left:0;right:100%;bottom:-4px;height:2px;background:var(--yellow);transition:right .25s steps(5)}
+.links a:hover{color:var(--ink)}.links a:hover::after{right:0}
+.nav-r{display:flex;align-items:center;gap:12px}
+.livepill{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font:400 9px var(--pixel);letter-spacing:.03em;text-transform:uppercase;padding:6px 10px;border:2px solid var(--ink);border-radius:2px;white-space:nowrap}
+.livepill i,.live i{width:8px;height:8px;background:var(--r-tester);display:block;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+@media (max-width:860px){.links{display:none}}
+@media (max-width:420px){.nav-r .rb{display:none}}
 
-  /* превью меню */
-  .menu{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);transform:rotate(1.5deg);transition:transform .4s}
-  .menu:hover{transform:rotate(0)}
-  .menu-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
-  .menu-top strong{font-family:Unbounded,sans-serif;font-size:14px;color:var(--role);transition:color .3s}
-  .menu-top small{font-size:11px;color:var(--muted)}
-  .menu-body{display:grid;grid-template-columns:110px 1fr}
-  .tabs{border-right:1px solid var(--line);padding:10px 8px;display:flex;flex-direction:column;gap:4px}
-  .tabs span{font-size:12px;color:var(--muted);padding:7px 10px;border-radius:8px}
-  .tabs span.on{background:var(--panel2);color:var(--text);box-shadow:inset 2px 0 0 var(--role)}
-  .opts{padding:12px 14px;display:flex;flex-direction:column;gap:12px}
-  .opt{display:flex;align-items:center;justify-content:space-between;font-size:13px}
-  .tg{width:38px;height:22px;border-radius:999px;background:#05080c;border:1px solid var(--line);position:relative;cursor:pointer;transition:background .2s}
-  .tg::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#6b7787;transition:transform .18s ease,background .2s}
-  .tg.on{background:var(--role);border-color:var(--role)}
-  .tg.on::after{transform:translateX(16px);background:#fff}
-  .slider{height:6px;border-radius:999px;background:#05080c;position:relative;margin-top:6px}
-  .slider i{position:absolute;left:0;top:0;bottom:0;width:62%;border-radius:999px;background:var(--role);transition:background .3s}
-  .slider i::after{content:"";position:absolute;right:-6px;top:-4px;width:14px;height:14px;border-radius:50%;background:#fff}
-  .rolebar{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-  .rolebar button{font:600 12px Inter,sans-serif;padding:6px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--muted);cursor:pointer}
-  .rolebar button.on{color:#03121a;border-color:transparent}
-  .hint{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+/* ===== герой ===== */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pix{position:absolute;inset:0 0 auto;height:320px;pointer-events:none;-webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent)}
+.pix canvas{width:100%;height:100%;display:block}
+.hero-in{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding-block:72px 64px}
+.kicker{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;font-size:9px;color:var(--muted);margin-bottom:28px}
+.kicker i{width:32px;height:1px;background:var(--rule)}
+.h-line{display:block;font:900 clamp(52px,12vw,150px)/.88 var(--display);letter-spacing:-.035em;text-transform:uppercase}
+.h-line .ch{display:inline-block;animation:drop .7s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(var(--i) * 60ms + 150ms)}
+.h-line .ch:hover{animation:jump .4s steps(4)}
+@keyframes drop{from{transform:translateY(-120%) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes jump{50%{transform:translateY(-14%)}}
+.tl{position:relative;display:inline-block;margin-top:10px;transform:rotate(-1.2deg);background:var(--paper);touch-action:none;user-select:none;-webkit-user-select:none}
+.tl-text{display:block;font:900 clamp(40px,9vw,112px)/1 var(--display);letter-spacing:-.03em;color:var(--yellow-text);padding:.12em .2em;text-transform:uppercase;white-space:nowrap}
+.tl-cover{position:absolute;top:0;bottom:0;right:0;background:var(--paper)}
+.tl-handle{position:absolute;top:-6px;bottom:-6px;width:14px;margin-left:-7px;background:var(--paper);border:2px solid var(--yellow);border-radius:4px;cursor:ew-resize;display:flex;align-items:center;justify-content:center;padding:0}
+.tl-handle i{width:3px;height:40%;background:var(--yellow);border-radius:2px}
+.hero p.sub{max-width:52ch;color:var(--muted);margin:40px 0 0;font-size:16px}
+.cta{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:32px}
+.hint{margin-top:14px;font-size:9px;color:var(--muted)}
+.fade-up{animation:fadeUp .6s ease-out both;animation-delay:var(--d,0ms)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-  section{padding:64px 0}
-  .sec-head{margin-bottom:28px}
-  .sec-head small{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase}
-  h2{font-family:Unbounded,sans-serif;font-weight:700;font-size:clamp(26px,4vw,36px);margin:6px 0 0}
+/* бегущая строка */
+.ticker{background:var(--yellow);color:#1a1400;border-bottom:2px solid #000;overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-flex;gap:36px;padding-block:10px;animation:tick 22s linear infinite;font:400 10px var(--pixel);letter-spacing:.03em;text-transform:uppercase}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker-track span::after{content:"■";margin-left:36px;font-size:9px;vertical-align:middle}
+@keyframes tick{to{transform:translateX(-50%)}}
 
-  /* запуск */
-  .launch{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:24px;padding:28px}
-  .code{display:flex;align-items:stretch;gap:10px;background:#04070b;border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 16px}
-  .code code{flex:1;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--accent2);white-space:nowrap;overflow-x:auto;padding:12px 0;scrollbar-width:thin}
-  .code .btn{flex-shrink:0;padding:10px 18px}
-  .copied{background:#5fd16b !important;box-shadow:none !important}
-  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
-  .step{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
-  .step b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:rgba(76,195,255,.12);color:var(--accent);font-family:Unbounded,sans-serif;font-size:13px;margin-bottom:8px}
-  .step p{margin:0;font-size:14px;color:var(--muted)}
-  .step p strong{color:var(--text);font-weight:600}
+/* строка скрипта */
+.script{border-bottom:1px solid var(--rule)}
+.script .wrap{display:flex;align-items:center;gap:16px;padding-block:18px}
+.script .px{font-size:9px;color:var(--muted);white-space:nowrap}
+.script code{flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font:500 13px/1.6 var(--mono);color:var(--ink);padding-block:4px}
+@media (max-width:640px){.script .wrap{flex-wrap:wrap}.script code{flex-basis:100%;order:3}}
 
-  /* функции */
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:transform .2s,border-color .2s}
-  .card:hover{transform:translateY(-3px);border-color:rgba(76,195,255,.4)}
-  .card .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--panel2);margin-bottom:12px}
-  .card h3{margin:0 0 6px;font-size:17px}
-  .card p{margin:0;color:var(--muted);font-size:14px}
+section{padding-block:88px;border-bottom:1px solid var(--rule)}
+.sh{display:flex;flex-direction:column;gap:12px;margin-bottom:40px}
+.sh .px{font-size:10px;color:var(--yellow-text)}
+.sh h2{font:900 clamp(32px,5vw,56px)/1 var(--display);letter-spacing:-.025em;text-transform:uppercase;position:relative;width:max-content;max-width:100%}
+.sh h2::after{content:"";position:absolute;left:0;bottom:-8px;height:6px;width:100%;background:var(--yellow);transform-origin:left;transition:transform .6s steps(8) .2s}
+.sh p{margin:0;color:var(--muted);max-width:56ch}
 
-  /* роли */
-  .roles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  .role{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden}
-  .role::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
-  .role h3{margin:0 0 6px;font-family:Unbounded,sans-serif;font-size:16px;color:var(--c)}
-  .role p{margin:0;font-size:13px;color:var(--muted)}
+/* появление при прокрутке */
+.rv{transition:opacity .6s ease-out,transform .6s cubic-bezier(.2,1,.3,1);transition-delay:calc(var(--i,0) * 70ms)}
+.rv.pre{opacity:0;transform:translateY(28px)}
+.sh.pre h2::after{transform:scaleX(0)}
+.sh.pre{opacity:1;transform:none}
 
-  /* faq */
-  details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:10px}
-  summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
-  summary::after{content:"+";color:var(--accent);font-size:20px;line-height:1}
-  details[open] summary::after{content:"–"}
-  details p{color:var(--muted);margin:10px 0 0;font-size:14px}
+/* ===== пульт функций ===== */
+.console{display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:stretch}
+.device{background:#1b1b1c;border-radius:14px;padding:18px;box-shadow:inset 0 1px 0 #3a3a3c,0 18px 40px -20px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:16px;min-width:0}
+.lcd{background:var(--lcd);border-radius:6px;padding:18px 20px;box-shadow:inset 0 0 0 2px #0d1106,inset 0 6px 16px rgba(0,0,0,.6);min-height:176px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden}
+.lcd::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);pointer-events:none}
+.lcd::before{content:"";position:absolute;left:0;right:0;height:30%;top:-30%;background:linear-gradient(transparent,rgba(217,249,157,.07),transparent);animation:scan 3.2s linear infinite;pointer-events:none}
+@keyframes scan{to{top:100%}}
+.lcd .px{color:var(--lcd-dim);font-size:9px;display:flex;justify-content:space-between}
+.lcd h3{font:400 21px/1.1 var(--pixel);color:var(--lcd-ink);text-transform:uppercase;letter-spacing:.04em}
+.lcd h3.glitch{animation:glitch .35s steps(3)}
+@keyframes glitch{0%{transform:translateX(-4px);opacity:.3}50%{transform:translateX(3px)}100%{transform:none;opacity:1}}
+.lcd p{margin:0;font:500 14px/1.5 var(--mono);color:var(--lcd-ink);opacity:.85;min-height:3em}
+.lcd p::after{content:"▌";animation:blink .8s steps(2) infinite;margin-left:2px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.keys .rb{width:100%}
+.keys .rb>span{padding:1.15rem .3rem;font-size:10px;line-height:1.4}
+.screws{display:flex;justify-content:space-between;font:400 9px var(--pixel);color:#6b6b70;letter-spacing:.03em;text-transform:uppercase}
+.feat-list{display:flex;flex-direction:column;min-width:0}
+.feat-list button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px 1fr;gap:4px 14px;padding:16px 4px;border-top:1px solid var(--rule);transition:background .2s,padding .2s}
+.feat-list button:hover{padding-left:10px}
+.feat-list button:last-child{border-bottom:1px solid var(--rule)}
+.feat-list button:focus-visible{outline:3px solid var(--yellow)}
+.feat-list b{grid-row:span 2;font:400 10px/1.6 var(--pixel);color:var(--muted);text-transform:uppercase;height:24px;line-height:24px;text-align:center;border-radius:3px;transition:background .2s}
+.feat-list strong{font:700 18px/1.3 var(--display)}
+.feat-list small{color:var(--muted);font-size:14px}
+.feat-list button[aria-current="true"] b{background:var(--yellow);color:#1a1400}
+@media (max-width:880px){.console{grid-template-columns:1fr}.feat-list{display:none}}
 
-  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:13px;text-align:center}
+/* ===== роли ===== */
+.roles{display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:start}
+.role-rows{display:flex;flex-direction:column;min-width:0}
+.role-row{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:18px 0;border-top:1px solid var(--rule)}
+.role-row:last-child{border-bottom:1px solid var(--rule)}
+.role-row .rb{width:100%}
+.role-row p{margin:0;color:var(--muted);font-size:15px}
+.win{background:#0f1218;border:2px solid #000;border-radius:4px;box-shadow:6px 6px 0 var(--role);color:#e9edf3;overflow:hidden;min-width:0;transition:box-shadow .3s}
+.win.bump{animation:wbump .35s steps(4)}
+@keyframes wbump{50%{transform:translate(-3px,-3px)}}
+.win-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#161b23;border-bottom:2px solid #000}
+.win-bar strong{font:400 10px var(--pixel);color:var(--role);text-transform:uppercase;letter-spacing:.03em;transition:color .3s}
+.win-bar span{display:flex;gap:5px}.win-bar span i{width:10px;height:10px;background:#2a313c;display:block}
+.win-tabs{display:flex;border-bottom:2px solid #000}
+.win-tabs button{all:unset;cursor:pointer;flex:1;text-align:center;padding:9px 0;font:400 9px var(--pixel);text-transform:uppercase;color:#7d8794}
+.win-tabs button[aria-selected="true"]{color:#fff;box-shadow:inset 0 -3px 0 var(--role)}
+.win-tabs button:focus-visible{outline:2px solid var(--yellow);outline-offset:-2px}
+.win-body{padding:12px 14px;display:flex;flex-direction:column;min-height:214px;animation:fadeUp .25s ease-out}
+.opt{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed #252c36;font-size:14px}
+.opt.lock{opacity:.4}
+.sw{all:unset;cursor:pointer;width:34px;height:18px;background:#2a313c;position:relative;flex:none;border-radius:2px;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;background:#cfd6df;transition:transform .2s steps(3)}
+.sw[aria-checked="true"]{background:var(--role)}
+.sw[aria-checked="true"]::after{transform:translateX(16px);background:#0f1218}
+.sw:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.bar{height:8px;background:#2a313c;margin-top:6px;position:relative}
+.bar i{position:absolute;inset:0 35% 0 0;background:var(--role);transition:background .3s}
+.kv{font:400 10px var(--pixel);color:#9aa4b1;padding:6px 0;letter-spacing:.03em;text-transform:uppercase}
+.kv b{color:#fff;font-weight:400}
+@media (max-width:880px){.roles{grid-template-columns:1fr}.role-row{grid-template-columns:130px 1fr}}
 
-  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
-  .reveal.in{opacity:1;transform:none}
+/* ===== онлайн ===== */
+.r-default{--rc:var(--r-default)}.r-premium{--rc:var(--r-premium)}.r-tester{--rc:var(--r-tester)}.r-owner{--rc:var(--r-owner)}.r-stepan{--rc:var(--r-stepan)}
+.on-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:40px}
+.on-head .sh{margin:0;min-width:0;flex:1 1 280px}
+.on-head .sh h2{overflow-wrap:anywhere}
+.counter{display:flex;align-items:center;gap:14px;background:var(--lcd);color:var(--lcd-ink);border-radius:6px;padding:10px 16px;box-shadow:inset 0 0 0 2px #0d1106}
+.counter b{font:400 30px/1 var(--pixel);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums;display:inline-block}
+.counter b.bump{animation:cbump .4s steps(4)}
+@keyframes cbump{0%{transform:translateY(-30%);opacity:.3}100%{transform:none;opacity:1}}
+.counter span{font:400 9px/1.3 var(--pixel);letter-spacing:.03em;text-transform:uppercase;color:var(--lcd-dim)}
+.live{display:inline-flex;align-items:center;gap:6px}
+.users{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.user{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:56px 1fr;gap:14px;align-items:center;padding:12px;background:var(--panel);border:2px solid var(--ink);border-radius:3px;box-shadow:4px 4px 0 var(--rc);transition:transform .15s,box-shadow .15s;min-width:0}
+.user:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--rc)}
+.user:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--rc)}
+.user:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.user.enter{animation:uin .45s steps(6) both;animation-delay:calc(var(--i,0) * 40ms)}
+.user.out{animation:uout .3s steps(5) forwards;pointer-events:none}
+.user.flash{animation:uflash .6s steps(3)}
+@keyframes uin{from{clip-path:inset(0 100% 0 0);transform:translateX(-8px)}to{clip-path:inset(0 0 0 0);transform:none}}
+@keyframes uout{to{clip-path:inset(0 0 0 100%);opacity:0}}
+@keyframes uflash{50%{background:color-mix(in srgb,var(--rc) 30%,var(--panel))}}
+.ava{width:56px;height:56px;border:2px solid var(--ink);border-radius:3px;background:color-mix(in srgb,var(--rc) 25%,var(--panel));object-fit:cover;display:block}
+.uinfo{min-width:0;display:flex;flex-direction:column;gap:2px}
+.urole{font:400 9px var(--pixel);letter-spacing:.03em;text-transform:uppercase;color:color-mix(in srgb,var(--rc) 70%,var(--ink))}
+.uname{font:700 16px/1.25 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.udisp{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nobody{grid-column:1/-1;border:2px dashed var(--rule);border-radius:4px;padding:36px 20px;text-align:center;color:var(--muted)}
+.nobody .px{display:block;font-size:16px;color:var(--ink);margin-bottom:8px}
+.skel{height:84px;border:2px solid var(--rule);border-radius:3px;background:linear-gradient(90deg,var(--panel) 0 40%,var(--rule) 50%,var(--panel) 60%) 0 0/300% 100%;animation:skel 1.2s linear infinite}
+@keyframes skel{to{background-position:-150% 0}}
 
-  @media (max-width:860px){
-    .hero{grid-template-columns:1fr;padding:48px 0 32px;gap:36px}
-    .grid{grid-template-columns:1fr 1fr}
-    .steps,.roles{grid-template-columns:1fr 1fr}
-  }
-  @media (max-width:520px){
-    nav a:not(.cta){display:none}
-    .grid,.steps,.roles{grid-template-columns:1fr}
-    .launch{padding:18px}
-    .code{flex-direction:column;padding:10px}
-    .code code{white-space:pre-wrap;word-break:break-all;padding:6px 4px}
-    .code .btn{justify-content:center}
-    .menu{transform:none}
-  }
-  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
+/* ===== шаги ===== */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule)}
+.step{padding:24px 20px 8px;display:flex;flex-direction:column;gap:12px;border-right:1px solid var(--rule);min-width:0}
+.step:first-child{padding-left:0}.step:last-child{border-right:0}
+.step .n{font:400 10px var(--pixel);text-transform:uppercase;color:#1a1400;background:var(--yellow);width:max-content;padding:2px 8px;border-radius:2px;letter-spacing:.03em;transition:transform .2s}
+.step:hover .n{transform:rotate(-4deg) scale(1.08)}
+.step p{margin:0;font-size:16px}
+.step p b{font-weight:600}
+@media (max-width:880px){.steps{grid-template-columns:1fr 1fr}.step{border-right:0;padding-left:0;border-bottom:1px solid var(--rule);padding-bottom:20px}}
+@media (max-width:480px){.steps{grid-template-columns:1fr}}
 
-  /* онлайн */
-  .online-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  .live{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:8px 14px;border-radius:999px}
-  .live i{width:8px;height:8px;border-radius:50%;background:#5fd16b;box-shadow:0 0 10px #5fd16b;animation:pulse 2s infinite}
-  .users{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
-  .user{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;text-align:left;color:var(--text);font:inherit;transition:transform .15s,border-color .15s}
-  .user:hover{transform:translateY(-2px);border-color:var(--rc)}
-  .ava{width:52px;height:52px;border-radius:14px;background:var(--panel2);object-fit:cover;flex-shrink:0;border:2px solid var(--rc)}
-  .uinfo{min-width:0}
-  .urole{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--rc)}
-  .uname{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .udisp{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .nobody{grid-column:1/-1;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:16px;padding:28px}
-  .r-default{--rc:#9aa4b1}.r-premium{--rc:#4cc3ff}.r-tester{--rc:#5fd16b}.r-owner{--rc:#f5c542}.r-stepan{--rc:#ff4d4d}
+/* ===== FAQ ===== */
+.faq{max-width:820px}
+details{border-top:1px solid var(--rule)}
+details:last-child{border-bottom:1px solid var(--rule)}
+summary{list-style:none;cursor:pointer;padding:22px 0;display:flex;justify-content:space-between;gap:16px;font:700 19px/1.3 var(--display);transition:padding .2s}
+summary:hover{padding-left:8px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 16px/1 var(--pixel);color:var(--yellow-text);transition:transform .25s steps(3)}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 22px;color:var(--muted);max-width:62ch}
+details[open] p{animation:fadeUp .3s ease-out}
 
-  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.65);backdrop-filter:blur(6px)}
-  .modal.open{display:flex}
-  .mbox{width:100%;max-width:360px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;text-align:center;position:relative;animation:pop .2s ease}
-  @keyframes pop{from{transform:scale(.94);opacity:0}}
-  .mclose{position:absolute;top:10px;right:12px;background:none;border:0;color:var(--muted);font-size:26px;cursor:pointer;line-height:1}
-  .mava{width:110px;height:110px;border-radius:26px;border:3px solid var(--rc);background:var(--panel2);object-fit:cover}
-  .mbox .urole{margin-top:12px;font-size:12px}
-  .mbox .uname{font-size:22px;font-family:Unbounded,sans-serif;margin:2px 0}
-  .mbox .btn{width:100%;justify-content:center;margin-top:16px}
-  .mlinks{display:flex;justify-content:center;gap:14px;margin-top:12px;font-size:13px}
-  .mlinks a{color:var(--muted)}
-  .note{font-size:12px;color:var(--muted);margin-top:14px}
+/* ===== админка ===== */
+.admin .sh .px{color:var(--err)}
+.acard{background:var(--panel);border:2px solid var(--ink);border-radius:4px;box-shadow:6px 6px 0 var(--ink);padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0;animation:uin .4s steps(6) both}
+.acard h3{font:900 22px/1.15 var(--display);text-transform:uppercase}
+.acard .sub{margin:0;color:var(--muted);font-size:14px}
+.alogin{max-width:440px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field span{font:400 9px var(--pixel);letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+.inp{width:100%;font:500 16px var(--body);color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:2px;padding:11px 12px;box-shadow:inset 3px 3px 0 color-mix(in srgb,var(--ink) 8%,transparent)}
+.inp:focus{outline:3px solid var(--yellow);outline-offset:1px}
+.code6{font:400 21px var(--pixel);letter-spacing:.4em;text-align:center}
+.astatus{font:400 10px var(--pixel);letter-spacing:.03em;min-height:1.3em;text-transform:uppercase}
+.astatus.ok{color:var(--ok)}.astatus.err{color:var(--err);animation:shake .3s steps(4)}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.abar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.abar b{color:var(--ink)}
+.alink{all:unset;cursor:pointer;font:400 9px var(--pixel);letter-spacing:.03em;text-transform:uppercase;color:var(--err);border-bottom:2px solid currentColor}
+.alink:focus-visible{outline:3px solid var(--yellow)}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:24px}
+@media (max-width:820px){.agrid{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips .rb>span{padding:.6rem .9rem;font-size:9px}
+.qrwrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.qrwrap img{width:160px;height:160px;background:#fff;padding:8px;border:2px solid var(--ink);border-radius:3px}
+.secret{font:500 13px var(--mono);word-break:break-all;margin-top:6px;padding:8px;border:1px dashed var(--rule)}
+.alist{display:flex;flex-direction:column;max-height:420px;overflow:auto}
+.arow{display:grid;grid-template-columns:36px 1fr auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--rule);animation:fadeUp .3s ease-out both}
+.ainit{width:36px;height:36px;display:grid;place-items:center;background:var(--rc);color:#111;font:400 12px var(--pixel);border:2px solid var(--ink);border-radius:2px}
+.ainfo{min-width:0;display:flex;flex-direction:column}
+.ainfo a{font-weight:600;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ainfo a[href]:hover{text-decoration:underline}
+.ainfo small{color:var(--muted);font-size:12px}
+.pill{font:400 9px var(--pixel);letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:2px;background:var(--rc);color:#111}
+.xbtn{all:unset;cursor:pointer;font:400 9px var(--pixel);padding:6px 9px;border:2px solid var(--ink);border-radius:2px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.xbtn:hover{background:var(--err);color:#fff;border-color:var(--err)}
+.xbtn.sure{background:var(--err);color:#fff;border-color:var(--err);animation:shake .3s steps(4)}
+.xbtn:disabled{opacity:.5;cursor:wait}
+.aempty{color:var(--muted);padding:12px 0}
 
-  /* ===== админ ===== */
-  [hidden]{display:none!important}
-  .admin{padding-top:24px}
-  .admin .sec-head small{color:#f5c542}
-  .acard{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:22px;padding:22px;position:relative;overflow:hidden}
-  .acard::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,#f5c542,#ff9f43)}
-  .acard h3{margin:0 0 4px;font-family:Unbounded,sans-serif;font-size:17px}
-  .acard .sub{margin:0 0 16px;color:var(--muted);font-size:13px}
-  .alogin{max-width:420px}
-  .field{display:block;margin-bottom:12px}
-  .field span{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:.3px}
-  .inp{width:100%;background:#04070b;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);font:500 15px Inter,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
-  .inp:focus{border-color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.15)}
-  .inp.code6{font-family:"JetBrains Mono",monospace;font-size:24px;letter-spacing:10px;text-align:center}
-  .btn.gold{background:linear-gradient(100deg,#f5c542,#ff9f43);color:#1a1203;box-shadow:0 8px 30px rgba(245,197,66,.2)}
-  .btn.gold:disabled,.btn.primary:disabled{opacity:.55;cursor:wait}
-  .btn.wide{width:100%;justify-content:center}
-  .astatus{min-height:20px;margin-top:10px;font-size:13px;color:var(--muted)}
-  .astatus.ok{color:#5fd16b}.astatus.err{color:#ff6b6b}
-  .qrwrap{display:flex;gap:16px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
-  .qrwrap img{width:160px;height:160px;background:#fff;border-radius:14px;padding:8px}
-  .secret{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent2);word-break:break-all;background:#04070b;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px}
-  .agrid{display:grid;grid-template-columns:1fr 1.1fr;gap:14px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
-  .chip{--rc:#9aa4b1;font:600 13px Inter,sans-serif;padding:8px 14px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
-  .chip i{width:8px;height:8px;border-radius:50%;background:var(--rc)}
-  .chip:hover{border-color:var(--rc);color:var(--text)}
-  .chip.on{background:var(--rc);border-color:var(--rc);color:#071018}
-  .chip.on i{background:#071018}
-  .chip.none.on{background:#3a2328;border-color:#ff6b6b;color:#ffb3b3}
-  .chip.none.on i{background:#ff6b6b}
-  .alist{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;padding-right:2px}
-  .arow{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-  .ainit{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font:800 15px Unbounded,sans-serif;color:#071018;background:var(--rc);flex-shrink:0}
-  .ainfo{flex:1;min-width:0}
-  .ainfo a{font-weight:600;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ainfo small{color:var(--muted);font-size:12px}
-  .pill{font:700 11px Inter,sans-serif;letter-spacing:.5px;text-transform:uppercase;color:var(--rc);border:1px solid var(--rc);border-radius:999px;padding:3px 9px;flex-shrink:0}
-  .xbtn{background:none;border:1px solid var(--line);color:var(--muted);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:15px;flex-shrink:0;transition:all .15s}
-  .xbtn:hover{border-color:#ff6b6b;color:#ff6b6b}
-  .aempty{color:var(--muted);text-align:center;padding:22px;border:1px dashed var(--line);border-radius:14px;font-size:14px}
-  .abar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;color:var(--muted);font-size:13px;flex-wrap:wrap}
-  .abar b{color:#f5c542;font-weight:600}
-  .alink{background:none;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:7px 12px;font:600 13px Inter,sans-serif;cursor:pointer}
-  .alink:hover{color:var(--text);border-color:var(--muted)}
-  .madmin{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);text-align:left}
-  .madmin .mt{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#f5c542;margin-bottom:8px;text-align:center}
-  .madmin .chips{justify-content:center;margin-bottom:0}
-  .madmin .astatus{text-align:center}
-  .flock{opacity:.35;text-decoration:none;margin-left:8px;transition:opacity .15s}
-  .flock:hover{opacity:1}
-  @media (max-width:860px){.agrid{grid-template-columns:1fr}}
+/* ===== карточка игрока ===== */
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal.open{display:flex;animation:mfade .2s ease-out}
+@keyframes mfade{from{background:rgba(0,0,0,0)}}
+.mbox{position:relative;width:min(400px,100%);max-height:100%;overflow:auto;background:var(--panel);border:2px solid var(--ink);border-radius:4px;box-shadow:8px 8px 0 var(--rc);padding:28px 22px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;animation:mpop .35s steps(5) both}
+@keyframes mpop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.mclose{all:unset;cursor:pointer;position:absolute;top:10px;right:10px;width:32px;height:32px;display:grid;place-items:center;font:400 13px var(--pixel);border:2px solid var(--ink);border-radius:2px}
+.mclose:hover{background:var(--ink);color:var(--paper)}
+.mclose:focus-visible{outline:3px solid var(--yellow)}
+.mava{width:104px;height:104px;border:3px solid var(--ink);border-radius:4px;background:color-mix(in srgb,var(--rc) 25%,var(--panel));object-fit:cover;margin-bottom:8px;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-5px)}}
+.mbox .uname{font-size:22px;white-space:normal}
+.mbox .rb{margin-top:14px}
+.mlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;font-size:13px;margin-top:8px}
+.mlinks a{color:var(--muted)}
+.madmin{width:100%;border-top:2px dashed var(--rule);margin-top:14px;padding-top:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.madmin .mt{font:400 9px var(--pixel);letter-spacing:.03em;text-transform:uppercase}
+.madmin .chips{justify-content:center}
+.note{font-size:12px;color:var(--muted);margin-top:12px;max-width:34ch}
+
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:28px;font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;pointer-events:none;z-index:60;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast span{display:block;background:var(--yellow);color:#1a1400;font:400 10px var(--pixel);text-transform:uppercase;letter-spacing:.03em;padding:12px 18px;border:2px solid #000;box-shadow:4px 4px 0 #000;white-space:nowrap}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
+@media (max-width:520px){section{padding-block:64px}.hero-in{padding-block:52px 48px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}html{scroll-behavior:auto}.rv.pre{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<div class="bg"></div>
 
-<header>
+<nav class="top">
   <div class="wrap">
-    <a class="logo" href="#">🦭 Seals<b>Hub</b></a>
-    <nav>
-      <a href="#features">Функции</a>
-      <a href="#roles">Роли</a>
-      <a href="#faq">FAQ</a>
-      <a href="#online">Онлайн</a>
-      <a class="cta" href="#launch" style="color:var(--accent)">Запустить</a>
-    </nav>
+    <a class="brand" href="#top"><canvas id="logo" width="8" height="8" aria-hidden="true"></canvas>Seals Hub</a>
+    <div class="links"><a href="#features">Функции</a><a href="#roles">Роли</a><a href="#online">Онлайн</a><a href="#launch">Запуск</a><a href="#faq">FAQ</a></div>
+    <div class="nav-r">
+      <a class="livepill" href="#online"><i></i><span id="navCount">…</span></a>
+      <button class="rb yellow" type="button" data-copy><span>Скопировать</span></button>
+    </div>
   </div>
-</header>
+</nav>
 
-<main class="wrap">
-  <div class="hero">
-    <div>
-      <div class="tag"><i></i> Murder Mystery 2 · Delta</div>
-      <h1><span>Seals Hub</span></h1>
-      <p class="lead">Скрипт-хаб для MM2 с удобным меню для телефона: ESP, паки анимаций с предпросмотром, роли со своими цветами и перевод на 15 языков.</p>
-      <div class="btns">
-        <a class="btn primary" href="#launch">⚡ Скопировать скрипт</a>
-        <a class="btn ghost" href="#features">Что умеет</a>
+<main id="top">
+  <header class="hero">
+    <div class="pix" aria-hidden="true"><canvas id="pix"></canvas></div>
+    <div class="wrap hero-in">
+      <div class="kicker px fade-up"><span>Murder Mystery 2</span><i></i><span>Delta</span><i></i><span>15 языков</span></div>
+      <h1 aria-label="Seals Hub">
+        <span class="h-line" data-split>Seals</span>
+        <span class="h-line" data-split>Hub</span>
+      </h1>
+      <div class="tl fade-up" id="tl" style="--d:500ms">
+        <span class="tl-text">для MM2</span>
+        <span class="tl-cover" id="tl-cover"></span>
+        <button class="tl-handle" id="tl-handle" type="button" aria-label="Потяни, чтобы открыть надпись"><i></i></button>
+      </div>
+      <p class="sub fade-up" style="--d:700ms">Скрипт-хаб с удобным меню для телефона: ESP, паки анимаций с предпросмотром, роли со своими цветами и перевод на 15 языков.</p>
+      <div class="cta fade-up" style="--d:850ms">
+        <button class="rb yellow big" type="button" data-copy><span>Скопировать скрипт</span></button>
+        <a class="rb dark big" href="#launch"><span>Как запустить</span></a>
+      </div>
+      <div class="hint px fade-up" style="--d:1000ms">Жёлтую ручку можно тянуть</div>
+    </div>
+  </header>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Player ESP</span><span>Chams</span><span>Gun ESP</span><span>Chams Self</span><span>Паки анимаций</span><span>15 языков</span><span>Цвет по роли</span><span>Mobile Delta</span>
+      <span>Player ESP</span><span>Chams</span><span>Gun ESP</span><span>Chams Self</span><span>Паки анимаций</span><span>15 языков</span><span>Цвет по роли</span><span>Mobile Delta</span>
+    </div>
+  </div>
+
+  <div class="script">
+    <div class="wrap">
+      <span class="px">loadstring</span>
+      <code id="ls">loadstring(game:HttpGet("https://raw.githubusercontent.com/MrPomkin/SealsHub_GG/main/seals.lua"))()</code>
+      <button class="rb white" type="button" data-copy><span>Копировать</span></button>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="sh rv"><span class="px">Функции</span><h2>Что внутри</h2><p>Жми на кнопки пульта, на экране появится описание.</p></div>
+      <div class="console">
+        <div class="device rv">
+          <div class="lcd" aria-live="polite">
+            <div class="px"><span id="lcd-n">01 / 06</span><span>SEALS·OS</span></div>
+            <h3 id="lcd-t">ESP</h3>
+            <p id="lcd-d">Подсветка игроков по ролям и ESP упавшего пистолета.</p>
+          </div>
+          <div class="keys" id="keys"></div>
+          <div class="screws"><span>Model SH-15</span><span>Mobile Delta</span></div>
+        </div>
+        <div class="feat-list rv" id="feat-list" style="--i:2"></div>
       </div>
     </div>
+  </section>
 
-    <div>
-      <div class="menu" id="menu">
-        <div class="menu-top"><strong>Seals Hub</strong><small id="roleName">Default</small></div>
-        <div class="menu-body">
-          <div class="tabs">
-            <span>Main</span><span class="on">ESP</span><span>Animations</span><span>Info</span>
+  <section id="roles">
+    <div class="wrap">
+      <div class="sh rv"><span class="px">Роли</span><h2>Роли в хабе</h2><p>Меню, переключатели и слайдеры берут цвет твоей роли. Нажми на роль и посмотри окно меню.</p></div>
+      <div class="roles">
+        <div class="role-rows">
+          <div class="role-row rv" style="--i:0"><button class="rb rc r-default" type="button" data-role="Default" aria-pressed="true"><span>Default</span></button><p>Базовые функции для всех. Серое меню.</p></div>
+          <div class="role-row rv" style="--i:1"><button class="rb rc r-premium" type="button" data-role="Premium" aria-pressed="false"><span>Premium</span></button><p>Открывает премиум-кнопки и функции.</p></div>
+          <div class="role-row rv" style="--i:2"><button class="rb rc r-tester" type="button" data-role="Tester" aria-pressed="false"><span>Tester</span></button><p>Премиум и окно диагностики для тестов.</p></div>
+          <div class="role-row rv" style="--i:3"><button class="rb rc r-owner" type="button" data-role="Owner" aria-pressed="false"><span>Owner</span></button><p>Золотое меню и полный доступ.</p></div>
+        </div>
+        <div class="win rv" id="win" style="--i:2">
+          <div class="win-bar"><strong id="win-title">Seals Hub · Default</strong><span><i></i><i></i><i></i></span></div>
+          <div class="win-tabs" role="tablist" aria-label="Вкладки меню">
+            <button role="tab" aria-selected="true" data-tab="main">Main</button>
+            <button role="tab" aria-selected="false" data-tab="esp">ESP</button>
+            <button role="tab" aria-selected="false" data-tab="anim">Anim</button>
+            <button role="tab" aria-selected="false" data-tab="info">Info</button>
           </div>
-          <div class="opts">
-            <div class="opt">Player ESP <div class="tg on"></div></div>
-            <div class="opt">Chams <div class="tg on"></div></div>
-            <div class="opt">Gun ESP <div class="tg"></div></div>
-            <div class="opt">Chams Self <div class="tg"></div></div>
-            <div><div class="opt">Прозрачность</div><div class="slider"><i></i></div></div>
+          <div class="win-body" id="tab-main" role="tabpanel">
+            <div class="opt">Показывать меня на сайте<button class="sw" role="switch" aria-checked="true" aria-label="Показывать меня на сайте"></button></div>
+            <div class="opt">Язык<span class="kv"><b>Русский</b></span></div>
+            <div class="opt">Крупные кнопки<button class="sw" role="switch" aria-checked="true" aria-label="Крупные кнопки"></button></div>
+            <div class="opt prem">Премиум-функции<button class="sw" role="switch" aria-checked="false" aria-label="Премиум-функции"></button></div>
+          </div>
+          <div class="win-body" id="tab-esp" role="tabpanel" hidden>
+            <div class="opt">Player ESP<button class="sw" role="switch" aria-checked="true" aria-label="Player ESP"></button></div>
+            <div class="opt">Chams<button class="sw" role="switch" aria-checked="true" aria-label="Chams"></button></div>
+            <div class="opt">Gun ESP<button class="sw" role="switch" aria-checked="false" aria-label="Gun ESP"></button></div>
+            <div class="opt">Chams Self<button class="sw" role="switch" aria-checked="false" aria-label="Chams Self"></button></div>
+            <div style="font-size:14px;padding-top:10px">Прозрачность<div class="bar"><i></i></div></div>
+          </div>
+          <div class="win-body" id="tab-anim" role="tabpanel" hidden>
+            <div class="opt">Ninja<span class="kv"><b>превью</b></span></div>
+            <div class="opt">Zombie<span class="kv"><b>превью</b></span></div>
+            <div class="opt">Stylish<span class="kv"><b>превью</b></span></div>
+            <div class="opt prem">Toy<span class="kv"><b>premium</b></span></div>
+            <div class="opt">Сбросить анимации<button class="sw" role="switch" aria-checked="false" aria-label="Сбросить анимации"></button></div>
+          </div>
+          <div class="win-body" id="tab-info" role="tabpanel" hidden>
+            <div class="kv">Роль: <b id="info-role">Default</b></div>
+            <div class="kv">Игра: <b>Murder Mystery 2</b></div>
+            <div class="kv">Экзекутор: <b>Delta</b></div>
+            <div class="kv">Языков: <b>15</b></div>
+            <div class="kv" id="diag" hidden>Диагностика: <b>открыта</b></div>
+            <div class="kv">by <b>MrPomkin</b></div>
           </div>
         </div>
       </div>
-      <div class="rolebar" id="rolebar">
-        <button data-c="#9aa4b1" data-n="Default" class="on">Default</button>
-        <button data-c="#4cc3ff" data-n="Premium">Premium</button>
-        <button data-c="#5fd16b" data-n="Tester">Tester</button>
-        <button data-c="#f5c542" data-n="Owner">Owner</button>
-      </div>
-      <div class="hint">Нажми на роль, и меню перекрасится, как в скрипте</div>
     </div>
-  </div>
+  </section>
 
-  <section id="launch" class="reveal">
-    <div class="launch">
-      <div class="sec-head"><small>Запуск</small><h2>Как запустить в Delta</h2></div>
-      <div class="code">
-        <code id="ls">loadstring(game:HttpGet("https://raw.githubusercontent.com/MrPomkin/SealsHub_GG/main/seals.lua"))()</code>
-        <button class="btn primary" id="copy">📋 Копировать</button>
+  <section id="online">
+    <div class="wrap">
+      <div class="on-head">
+        <div class="sh rv"><span class="px">Онлайн</span><h2>Пользователи в сети</h2><p>Список обновляется сам каждую секунду. Нажми на игрока, чтобы зайти к нему на сервер.</p></div>
+        <div class="counter rv" style="--i:1"><b id="onlineNum">–</b><span class="live"><i></i><span id="onlineCount">Загрузка…</span></span></div>
       </div>
+      <div class="users" id="users"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+    </div>
+  </section>
+
+  <section id="launch">
+    <div class="wrap">
+      <div class="sh rv"><span class="px">Запуск</span><h2>Как запустить в Delta</h2></div>
       <div class="steps">
-        <div class="step"><b>1</b><p><strong>Скопируй</strong> скрипт кнопкой выше</p></div>
-        <div class="step"><b>2</b><p>Зайди в <strong>Murder Mystery 2</strong> через Delta</p></div>
-        <div class="step"><b>3</b><p>Открой экзекутор Delta и <strong>вставь</strong> скрипт</p></div>
-        <div class="step"><b>4</b><p>Нажми <strong>Execute</strong>, и меню Seals Hub откроется</p></div>
+        <div class="step rv" style="--i:0"><span class="n">Шаг 1</span><p><b>Скопируй</b> скрипт кнопкой выше.</p></div>
+        <div class="step rv" style="--i:1"><span class="n">Шаг 2</span><p>Зайди в <b>Murder Mystery 2</b> через Delta.</p></div>
+        <div class="step rv" style="--i:2"><span class="n">Шаг 3</span><p>Открой экзекутор Delta и <b>вставь</b> скрипт.</p></div>
+        <div class="step rv" style="--i:3"><span class="n">Шаг 4</span><p>Нажми <b>Execute</b>, и меню Seals Hub откроется.</p></div>
       </div>
     </div>
   </section>
 
-  <section id="features" class="reveal">
-    <div class="sec-head"><small>Функции</small><h2>Что внутри</h2></div>
-    <div class="grid">
-      <div class="card"><div class="ico">👁️</div><h3>ESP</h3><p>Подсветка игроков по ролям и ESP упавшего пистолета.</p></div>
-      <div class="card"><div class="ico">✨</div><h3>Chams</h3><p>Обводка сквозь стены, включая Chams на себя.</p></div>
-      <div class="card"><div class="ico">🕺</div><h3>Анимации</h3><p>Паки анимаций с превью на твоём персонаже со скином и сброс в один клик.</p></div>
-      <div class="card"><div class="ico">🌍</div><h3>15 языков</h3><p>Меню полностью переведено, от русского и белорусского до английского.</p></div>
-      <div class="card"><div class="ico">🎨</div><h3>Цвет по роли</h3><p>Меню, переключатели и слайдеры перекрашиваются в цвет твоей роли.</p></div>
-      <div class="card"><div class="ico">📱</div><h3>Для телефона</h3><p>Удобные крупные кнопки, рассчитано на мобильный Delta.</p></div>
+  <section id="faq">
+    <div class="wrap">
+      <div class="sh rv"><span class="px">FAQ</span><h2>Частые вопросы</h2></div>
+      <div class="faq rv">
+        <details><summary>Работает на телефоне?</summary><p>Да, хаб делался под мобильный Delta.</p></details>
+        <details><summary>Скрипт не запускается, что делать?</summary><p>Проверь, что скопировал строку целиком, включая скобки в конце, и что ты уже в игре MM2. Перезапусти Delta и попробуй ещё раз.</p></details>
+        <details><summary>Как поменять язык?</summary><p>Язык переключается в настройках внутри меню, доступно 15 языков.</p></details>
+        <details><summary>Можно получить бан?</summary><p>Любые сторонние скрипты нарушают правила Roblox, и риск бана есть всегда. Для экспериментов используй второй аккаунт.</p></details>
+        <details><summary>Как попасть в список «В сети»?</summary><p>В меню скрипта открой Settings и включи «Показывать меня на сайте». Если выключить, тебя не будет видно на сайте.</p></details>
+      </div>
     </div>
   </section>
 
-  <section id="roles" class="reveal">
-    <div class="sec-head"><small>Роли</small><h2>Роли в хабе</h2></div>
-    <div class="roles">
-      <div class="role" style="--c:#9aa4b1"><h3>Default</h3><p>Базовые функции для всех. Серое меню.</p></div>
-      <div class="role" style="--c:#4cc3ff"><h3>Premium</h3><p>Открывает премиум-кнопки и функции.</p></div>
-      <div class="role" style="--c:#5fd16b"><h3>Tester</h3><p>Премиум и окно диагностики для тестов.</p></div>
-      <div class="role" style="--c:#f5c542"><h3>Owner</h3><p>Золотое меню и полный доступ.</p></div>
-    </div>
-  </section>
-
-  <section id="faq" class="reveal">
-    <div class="sec-head"><small>FAQ</small><h2>Частые вопросы</h2></div>
-    <details><summary>Работает на телефоне?</summary><p>Да, хаб делался под мобильный Delta.</p></details>
-    <details><summary>Скрипт не запускается, что делать?</summary><p>Проверь, что скопировал строку целиком, включая скобки в конце, и что ты уже в игре MM2. Перезапусти Delta и попробуй ещё раз.</p></details>
-    <details><summary>Как поменять язык?</summary><p>Язык переключается в настройках внутри меню, доступно 15 языков.</p></details>
-    <details><summary>Можно получить бан?</summary><p>Любые сторонние скрипты нарушают правила Roblox, и риск бана есть всегда. Для экспериментов используй второй аккаунт.</p></details>
-    <details><summary>Как попасть в список «В сети»?</summary><p>В меню скрипта открой Settings и включи «Показывать меня на сайте». Если выключить, тебя не будет видно на сайте.</p></details>
-  </section>
-
-  <section id="online" class="reveal">
-    <div class="online-head sec-head">
-      <div><small>Онлайн</small><h2>Пользователи в сети</h2></div>
-      <div class="live"><i></i><span id="onlineCount">Загрузка…</span></div>
-    </div>
-    <div class="users" id="users"><div class="nobody">Загрузка…</div></div>
-  </section>
   <section id="admin" class="admin" hidden>
-    <div class="sec-head"><small>Админ</small><h2>Панель управления</h2></div>
+    <div class="wrap">
+      <div class="sh"><span class="px">Админ</span><h2>Панель управления</h2></div>
 
-    <form class="acard alogin" id="aLogin" hidden autocomplete="on">
-      <h3>🔐 Вход для админа</h3>
-      <p class="sub">Почта и пароль от аккаунта Supabase, потом код 2FA.</p>
-      <label class="field"><span>Почта</span><input class="inp" id="aEmail" type="email" autocomplete="username" required></label>
-      <label class="field"><span>Пароль</span><input class="inp" id="aPass" type="password" autocomplete="current-password" required></label>
-      <button class="btn gold wide" id="aLoginBtn" type="submit">Войти</button>
-      <div class="astatus" id="aLoginMsg"></div>
-    </form>
+      <form class="acard alogin" id="aLogin" hidden autocomplete="on">
+        <h3>Вход для админа</h3>
+        <p class="sub">Почта и пароль от аккаунта Supabase, потом код 2FA.</p>
+        <label class="field"><span>Почта</span><input class="inp" id="aEmail" type="email" autocomplete="username" required></label>
+        <label class="field"><span>Пароль</span><input class="inp" id="aPass" type="password" autocomplete="current-password" required></label>
+        <button class="rb yellow big wide" id="aLoginBtn" type="submit"><span>Войти</span></button>
+        <div class="astatus" id="aLoginMsg"></div>
+      </form>
 
-    <form class="acard alogin" id="aMfa" hidden autocomplete="off">
-      <h3>🛡️ Код подтверждения</h3>
-      <p class="sub" id="aMfaText">Введи 6-значный код из приложения-аутентификатора.</p>
-      <div id="aEnroll" hidden>
-        <div class="qrwrap">
-          <img id="aQr" alt="QR-код для приложения">
-          <div style="flex:1;min-width:160px">
-            <div style="font-size:13px;color:var(--muted)">Не сканируется? Введи ключ вручную:</div>
-            <div class="secret" id="aSecret"></div>
+      <form class="acard alogin" id="aMfa" hidden autocomplete="off">
+        <h3>Код подтверждения</h3>
+        <p class="sub" id="aMfaText">Введи 6-значный код из приложения-аутентификатора.</p>
+        <div id="aEnroll" hidden>
+          <div class="qrwrap">
+            <img id="aQr" alt="QR-код для приложения">
+            <div style="flex:1;min-width:160px">
+              <div style="font-size:13px;color:var(--muted)">Не сканируется? Введи ключ вручную:</div>
+              <div class="secret" id="aSecret"></div>
+            </div>
           </div>
         </div>
-      </div>
-      <label class="field"><span>Код</span><input class="inp code6" id="aCode" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required></label>
-      <button class="btn gold wide" id="aCodeBtn" type="submit">Подтвердить</button>
-      <div class="abar"><span></span><button class="alink" id="aCancel" type="button">Выйти</button></div>
-      <div class="astatus" id="aMfaMsg"></div>
-    </form>
+        <label class="field"><span>Код</span><input class="inp code6" id="aCode" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required></label>
+        <button class="rb yellow big wide" id="aCodeBtn" type="submit"><span>Подтвердить</span></button>
+        <div class="abar"><span></span><button class="alink" id="aCancel" type="button">Выйти</button></div>
+        <div class="astatus" id="aMfaMsg"></div>
+      </form>
 
-    <div id="aPanel" hidden>
-      <div class="agrid">
-        <form class="acard" id="aGrant" autocomplete="off">
-          <h3>Выдать роль</h3>
-          <p class="sub">Впиши ник в Roblox и выбери роль. Скрипт игрока подхватит её за пару секунд.</p>
-          <label class="field"><span>Ник в Roblox</span><input class="inp" id="aNick" placeholder="например, pomi_55" maxlength="20" required></label>
-          <div class="chips" id="aChips"></div>
-          <button class="btn gold wide" id="aGrantBtn" type="submit">Выдать</button>
-          <div class="astatus" id="aGrantMsg"></div>
-        </form>
-        <div class="acard">
-          <h3>Выданные роли</h3>
-          <p class="sub">Нажми ✕, чтобы снять роль.</p>
-          <div class="alist" id="aList"><div class="aempty">Загрузка…</div></div>
+      <div id="aPanel" hidden>
+        <div class="agrid">
+          <form class="acard" id="aGrant" autocomplete="off">
+            <h3>Выдать роль</h3>
+            <p class="sub">Впиши ник в Roblox и выбери роль. Скрипт игрока подхватит её за пару секунд.</p>
+            <label class="field"><span>Ник в Roblox</span><input class="inp" id="aNick" placeholder="например, pomi_55" maxlength="20" required></label>
+            <div class="chips" id="aChips"></div>
+            <button class="rb yellow big wide" id="aGrantBtn" type="submit"><span id="aGrantTxt">Выдать</span></button>
+            <div class="astatus" id="aGrantMsg"></div>
+          </form>
+          <div class="acard" style="animation-delay:80ms">
+            <h3>Выданные роли</h3>
+            <p class="sub">Нажми «Снять» два раза, чтобы забрать роль.</p>
+            <div class="alist" id="aList"><div class="aempty">Загрузка…</div></div>
+          </div>
         </div>
+        <div class="abar"><span>Вошёл как <b id="aWho"></b></span><button class="alink" id="aOut" type="button">Выйти из админки</button></div>
       </div>
-      <div class="abar"><span>Вошёл как <b id="aWho"></b></span><button class="alink" id="aOut" type="button">Выйти из админки</button></div>
     </div>
   </section>
 </main>
 
 <div class="modal" id="modal" aria-hidden="true">
-  <div class="mbox" id="mbox" role="dialog" aria-modal="true">
-    <button class="mclose" id="mclose" aria-label="Закрыть">×</button>
+  <div class="mbox" id="mbox" role="dialog" aria-modal="true" aria-labelledby="mname">
+    <button class="mclose" id="mclose" type="button" aria-label="Закрыть">×</button>
     <img class="mava" id="mava" alt="">
     <div class="urole" id="mrole"></div>
     <div class="uname" id="mname"></div>
     <div class="udisp" id="mdisp"></div>
-    <a class="btn primary" id="mjoin" href="#">🎮 Зайти к игроку</a>
+    <a class="rb yellow big" id="mjoin" href="#"><span>Зайти к игроку</span></a>
     <div class="mlinks">
       <a id="mjoin2" href="#" target="_blank" rel="noopener">Не открылось? Через сайт Roblox</a>
       <a id="mprof" href="#" target="_blank" rel="noopener">Профиль</a>
     </div>
     <div class="madmin" id="mAdmin" hidden>
-      <div class="mt">👑 Роль игрока</div>
+      <div class="mt">Роль игрока</div>
       <div class="chips" id="mChips"></div>
       <div class="astatus" id="mMsg"></div>
     </div>
@@ -398,16 +541,65 @@
   </div>
 </div>
 
-<footer>
-  <div class="wrap">🦭 Seals Hub · by MrPomkin<a class="flock" href="#admin" aria-label="Админ">🔐</a></div>
-</footer>
+<footer><div class="wrap"><span>Seals Hub · by MrPomkin</span><span>MM2 · Delta</span></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-t"></span></div>
+<canvas id="fx" aria-hidden="true"></canvas>
 
 <script>
 (() => {
-  // копирование loadstring
-  const btn = document.getElementById("copy");
-  const text = document.getElementById("ls").textContent;
-  async function copy(){
+  const root = document.documentElement;
+  const $ = id => document.getElementById(id);
+  const tok = n => getComputedStyle(root).getPropertyValue(n).trim();
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ===== тост =====
+  let toastTm;
+  function toast(t){
+    $("toast-t").textContent = t;
+    $("toast").classList.add("show");
+    clearTimeout(toastTm);
+    toastTm = setTimeout(() => $("toast").classList.remove("show"), 1800);
+  }
+  window.SealsToast = toast;
+
+  // ===== пиксельные искры при нажатии на ретро-кнопки =====
+  const fx = $("fx"), fxc = fx.getContext("2d");
+  let sparks = [], fxOn = false;
+  function fxSize(){ const d = Math.min(devicePixelRatio || 1, 2); fx.width = innerWidth * d; fx.height = innerHeight * d; fxc.setTransform(d,0,0,d,0,0); }
+  fxSize(); addEventListener("resize", fxSize);
+  function burst(x, y, color){
+    if (still) return;
+    const cols = [color || "#facc15", "#0c0c0d", "#ffffff"];
+    for (let i = 0; i < 16; i++){
+      const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 4;
+      sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, s: 3 + (Math.random() * 4 | 0), c: cols[i % 3], life: 1 });
+    }
+    if (!fxOn){ fxOn = true; requestAnimationFrame(fxLoop); }
+  }
+  function fxLoop(){
+    fxc.clearRect(0, 0, innerWidth, innerHeight);
+    sparks = sparks.filter(p => p.life > 0);
+    for (const p of sparks){
+      p.x += p.vx; p.y += p.vy; p.vy += .25; p.life -= .03;
+      fxc.globalAlpha = Math.max(0, p.life);
+      fxc.fillStyle = p.c;
+      fxc.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s);
+    }
+    fxc.globalAlpha = 1;
+    if (sparks.length) requestAnimationFrame(fxLoop); else { fxOn = false; fxc.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".rb");
+    if (!b || b.disabled) return;
+    const span = b.querySelector("span");
+    const c = span ? getComputedStyle(span).backgroundColor : null;
+    burst(e.clientX || b.getBoundingClientRect().left + b.offsetWidth / 2, e.clientY || b.getBoundingClientRect().top + b.offsetHeight / 2, c);
+  });
+  window.SealsBurst = burst;
+
+  // ===== копирование loadstring =====
+  const text = $("ls").textContent;
+  async function copy(btn){
     let ok = false;
     try { await navigator.clipboard.writeText(text); ok = true; }
     catch {
@@ -417,28 +609,178 @@
       try { ok = document.execCommand("copy"); } catch {}
       ta.remove();
     }
-    btn.textContent = ok ? "✅ Скопировано" : "Выдели вручную";
-    if (ok) btn.classList.add("copied");
-    setTimeout(() => { btn.textContent = "📋 Копировать"; btn.classList.remove("copied"); }, 2000);
+    if (ok){
+      toast("Скрипт скопирован");
+      btn.classList.add("copied");
+      setTimeout(() => btn.classList.remove("copied"), 1500);
+    } else {
+      const r = document.createRange(); r.selectNodeContents($("ls"));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      toast("Строка выделена, скопируй вручную");
+    }
   }
-  btn.addEventListener("click", copy);
+  document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copy(b)));
 
-  // перекраска меню по роли
-  const menu = document.documentElement;
-  document.querySelectorAll("#rolebar button").forEach(b => {
-    b.addEventListener("click", () => {
-      document.querySelectorAll("#rolebar button").forEach(x => { x.classList.remove("on"); x.style.background = ""; });
-      b.classList.add("on"); b.style.background = b.dataset.c;
-      menu.style.setProperty("--role", b.dataset.c);
-      document.getElementById("roleName").textContent = b.dataset.n;
+  // ===== пиксельный тюлень в логотипе =====
+  (() => {
+    const c = $("logo").getContext("2d");
+    ["........","..####..",".######.",".#o##o#.",".##nn##.","########",".######.","........"].forEach((row, y) =>
+      [...row].forEach((ch, x) => { if (ch === ".") return; c.fillStyle = ch === "#" ? "#1a1400" : "#facc15"; c.fillRect(x, y, 1, 1); }));
+  })();
+
+  // ===== буквы заголовка =====
+  document.querySelectorAll("[data-split]").forEach((el, li) => {
+    const t = el.textContent; el.textContent = "";
+    [...t].forEach((ch, i) => {
+      const s = document.createElement("span");
+      s.className = "ch"; s.textContent = ch; s.style.setProperty("--i", li * 5 + i);
+      s.setAttribute("aria-hidden", "true");
+      el.append(s);
     });
   });
-  document.querySelector("#rolebar .on").style.background = "#9aa4b1";
 
-  // переключатели в превью кликаются
-  document.querySelectorAll(".tg").forEach(t => t.addEventListener("click", () => t.classList.toggle("on")));
+  // ===== Pixel Background (21st.dev · scrollxui/hero-with-pixelbackground) =====
+  (() => {
+    const cv = $("pix"), ctx = cv.getContext("2d");
+    const GAP = 6;
+    let cells = [], w = 0, h = 0, t0 = performance.now(), running = false, visible = true;
+    function setup(){
+      const d = Math.min(devicePixelRatio || 1, 2);
+      w = cv.clientWidth; h = cv.clientHeight;
+      cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+      const cols = [tok("--pix1"), tok("--pix2"), tok("--pix3"), tok("--pix4")];
+      cells = [];
+      for (let y = 0; y < h; y += GAP) for (let x = 0; x < w; x += GAP)
+        cells.push({ x, y, c: cols[(Math.random() * 4) | 0], s: 0, max: Math.random() * 1.5 + 3.5, d: y * .9 + Math.random() * 80, ph: Math.random() * 6.28, sp: .01 + Math.random() * .03 });
+      t0 = performance.now();
+    }
+    function frame(now){
+      const t = now - t0;
+      ctx.clearRect(0, 0, w, h);
+      for (const p of cells){
+        if (!still && t < p.d) continue;
+        if (still) p.s = p.max; else if (p.s < p.max) p.s = Math.min(p.max, p.s + .12); else p.ph += p.sp;
+        const s = still ? p.s : p.s * (.75 + .25 * Math.sin(p.ph));
+        ctx.fillStyle = p.c; ctx.fillRect(p.x + (GAP - s) / 2, p.y + (GAP - s) / 2, s, s);
+      }
+      if (!still && visible) requestAnimationFrame(frame); else running = false;
+    }
+    function start(){ if (!running){ running = true; requestAnimationFrame(frame); } }
+    setup(); start();
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) start(); }).observe(cv);
+    let rt;
+    addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { setup(); start(); }, 150); });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { setup(); start(); });
+  })();
 
-  // ===== пользователи в сети =====
+  // ===== Timeline reveal: ручку можно тянуть =====
+  (() => {
+    const tl = $("tl"), cover = $("tl-cover"), hd = $("tl-handle");
+    let pos = still ? 100 : 6, drag = false;
+    const set = p => { pos = Math.max(4, Math.min(100, p)); cover.style.left = pos + "%"; hd.style.left = pos + "%"; };
+    set(pos);
+    if (!still){
+      const s = performance.now();
+      (function go(n){
+        const k = Math.min(1, (n - s - 700) / 1200);
+        if (k > 0 && !drag) set(6 + 94 * (1 - Math.pow(1 - k, 3)));
+        if (k < 1 && !drag) requestAnimationFrame(go);
+      })(s);
+    }
+    const move = e => { if (!drag) return; const r = tl.getBoundingClientRect(); set((e.clientX - r.left) / r.width * 100); };
+    hd.addEventListener("pointerdown", e => { drag = true; hd.setPointerCapture(e.pointerId); });
+    hd.addEventListener("pointermove", move);
+    hd.addEventListener("pointerup", () => { drag = false; if (pos > 96) burst(hd.getBoundingClientRect().left, hd.getBoundingClientRect().top + 20); });
+    hd.addEventListener("keydown", e => { if (e.key === "ArrowLeft") set(pos - 5); if (e.key === "ArrowRight") set(pos + 5); });
+  })();
+
+  // ===== пульт функций =====
+  const F = [
+    ["ESP", "Подсветка игроков по ролям и ESP упавшего пистолета."],
+    ["Chams", "Обводка сквозь стены, включая Chams на себя."],
+    ["Анимации", "Паки анимаций с превью на твоём персонаже со скином и сброс в один клик."],
+    ["15 языков", "Меню полностью переведено, от русского и белорусского до английского."],
+    ["Цвет роли", "Меню, переключатели и слайдеры перекрашиваются в цвет твоей роли."],
+    ["Телефон", "Удобные крупные кнопки, рассчитано на мобильный Delta."]
+  ];
+  const keyStyle = ["yellow", "dark", "dark", "dark", "dark", "white"];
+  const keys = $("keys"), list = $("feat-list");
+  let typeTm, cur = 0, auto = null;
+  F.forEach(([t, d], i) => {
+    const k = document.createElement("button");
+    k.type = "button"; k.className = "rb " + keyStyle[i];
+    const ks = document.createElement("span"); ks.textContent = t; k.append(ks);
+    k.setAttribute("aria-pressed", i === 0);
+    k.addEventListener("click", () => { stopAuto(); pick(i); });
+    keys.append(k);
+    const r = document.createElement("button");
+    r.type = "button";
+    const b = document.createElement("b"); b.textContent = "0" + (i + 1);
+    const s = document.createElement("strong"); s.textContent = t;
+    const sm = document.createElement("small"); sm.textContent = d;
+    r.append(b, s, sm);
+    r.setAttribute("aria-current", i === 0);
+    r.addEventListener("click", () => { stopAuto(); pick(i); });
+    list.append(r);
+  });
+  function pick(i){
+    cur = i;
+    [...keys.children].forEach((k, j) => k.setAttribute("aria-pressed", j === i));
+    [...list.children].forEach((k, j) => k.setAttribute("aria-current", j === i));
+    $("lcd-n").textContent = "0" + (i + 1) + " / 06";
+    const h = $("lcd-t"); h.textContent = F[i][0];
+    h.classList.remove("glitch"); void h.offsetWidth; h.classList.add("glitch");
+    const p = $("lcd-d"), full = F[i][1];
+    clearInterval(typeTm);
+    if (still){ p.textContent = full; return; }
+    let n = 0; p.textContent = "";
+    typeTm = setInterval(() => { n += 2; p.textContent = full.slice(0, n); if (n >= full.length) clearInterval(typeTm); }, 16);
+  }
+  function stopAuto(){ clearInterval(auto); auto = null; }
+  if (!still){
+    // пульт сам листает функции, пока на него не нажали
+    new IntersectionObserver(es => {
+      if (es[0].isIntersecting && auto === null && !keys.dataset.touched){ auto = setInterval(() => pick((cur + 1) % F.length), 3200); }
+      else if (!es[0].isIntersecting){ stopAuto(); }
+    }, { threshold: .4 }).observe(keys);
+    keys.addEventListener("pointerdown", () => { keys.dataset.touched = "1"; stopAuto(); });
+  }
+
+  // ===== роли и окно меню =====
+  const rc = { Default: "--r-default", Premium: "--r-premium", Tester: "--r-tester", Owner: "--r-owner" };
+  const roleBtns = [...document.querySelectorAll("[data-role]")];
+  function setRole(r, anim){
+    roleBtns.forEach(b => b.setAttribute("aria-pressed", b.dataset.role === r));
+    root.style.setProperty("--role", "var(" + rc[r] + ")");
+    $("win-title").textContent = "Seals Hub · " + r;
+    $("info-role").textContent = r;
+    document.querySelectorAll(".prem").forEach(e => e.classList.toggle("lock", r === "Default"));
+    $("diag").hidden = !(r === "Tester" || r === "Owner");
+    if (anim){ const w = $("win"); w.classList.remove("bump"); void w.offsetWidth; w.classList.add("bump"); }
+  }
+  roleBtns.forEach(b => b.addEventListener("click", () => setRole(b.dataset.role, true)));
+  setRole("Default");
+  document.querySelectorAll(".sw").forEach(s => s.addEventListener("click", () => {
+    if (s.closest(".lock")){ toast("Нужна роль Premium"); return; }
+    s.setAttribute("aria-checked", s.getAttribute("aria-checked") !== "true");
+  }));
+  const tabs = [...document.querySelectorAll(".win-tabs button")];
+  tabs.forEach(t => t.addEventListener("click", () => {
+    tabs.forEach(x => x.setAttribute("aria-selected", x === t));
+    document.querySelectorAll(".win-body").forEach(p => p.hidden = p.id !== "tab-" + t.dataset.tab);
+  }));
+
+  // ===== появление при прокрутке (только то, что ниже экрана) =====
+  if (!still && "IntersectionObserver" in window){
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ e.target.classList.remove("pre"); io.unobserve(e.target); }
+    }), { threshold: .12 });
+    document.querySelectorAll(".rv").forEach(el => {
+      if (el.getBoundingClientRect().top > innerHeight * .9){ el.classList.add("pre"); io.observe(el); }
+    });
+  }
+
+  // ===== пользователи в сети: обновление каждую секунду без перезагрузки =====
   const SB_URL = "https://esrtcgptxemaphbteokx.supabase.co/rest/v1/rpc/seals_list";
   const SB_KEY = "sb_publishable_WQqiUsZmQwNnO1YeRpbm5g_voABCYox";
   const ROLES = {
@@ -446,15 +788,20 @@
     owner:{name:"Owner"}, stepan:{name:"Stepan"}
   };
   const AVA_OK = /^https:\/\/tr\.rbxcdn\.com\/[A-Za-z0-9\/_.\-]+$/;
-  const FALLBACK_AVA = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#16202c"/><text x="20" y="27" font-size="20" text-anchor="middle">🦭</text></svg>');
-  const usersEl = document.getElementById("users");
-  const countEl = document.getElementById("onlineCount");
-  const modal = document.getElementById("modal");
+  const FALLBACK_AVA = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" shape-rendering="crispEdges"><rect width="8" height="8" fill="#facc15"/><path fill="#1a1400" d="M2 1h4v1H2zM1 2h6v1H1zM1 3h1v1H1zM3 3h2v1H3zM6 3h1v1H6zM1 4h2v1H1zM5 4h2v1H5zM0 5h8v1H0zM1 6h6v1H1z"/></svg>');
+  const usersEl = $("users"), countEl = $("onlineCount"), numEl = $("onlineNum"), navEl = $("navCount");
+  const modal = $("modal");
+  const cards = new Map();   // ключ → { el, u }
+  let firstLoad = true, lastCount = -1, inflight = false, fails = 0, modalKey = null;
 
   function roleKey(r){ return ROLES[r] ? r : "default"; }
+  function keyOf(u){ return String(u.user_id); }
   function setAva(img, url){
-    img.src = (typeof url === "string" && AVA_OK.test(url)) ? url : FALLBACK_AVA;
-    img.onerror = () => { img.onerror = null; img.src = FALLBACK_AVA; };
+    const src = (typeof url === "string" && AVA_OK.test(url)) ? url : FALLBACK_AVA;
+    if (img.dataset.src === src) return;
+    img.dataset.src = src;
+    img.src = src;
+    img.onerror = () => { img.onerror = null; img.dataset.src = FALLBACK_AVA; img.src = FALLBACK_AVA; };
   }
   function plural(n){
     const a = n % 10, b = n % 100;
@@ -462,18 +809,18 @@
     if (a >= 2 && a <= 4 && (b < 10 || b >= 20)) return "игрока";
     return "игроков";
   }
+  function dispText(u, fallback){ return (u.display_name && u.display_name !== u.username) ? "@" + u.display_name : fallback; }
 
-  function openUser(u){
-    if (window.SealsAdminModal) window.SealsAdminModal(u);
+  function fillModal(u){
     const rk = roleKey(u.role);
-    document.getElementById("mbox").className = "mbox r-" + rk;
-    setAva(document.getElementById("mava"), u.avatar_url);
-    document.getElementById("mrole").textContent = ROLES[rk].name;
-    document.getElementById("mname").textContent = u.username;
-    document.getElementById("mdisp").textContent = (u.display_name && u.display_name !== u.username) ? "@" + u.display_name : "";
+    $("mbox").className = "mbox r-" + rk;
+    setAva($("mava"), u.avatar_url);
+    $("mrole").textContent = ROLES[rk].name;
+    $("mname").textContent = u.username;
+    $("mdisp").textContent = dispText(u, "");
     const place = String(u.place_id), job = String(u.job_id), uid = String(u.user_id);
     const okIds = /^\d+$/.test(place) && /^[A-Za-z0-9\-]{1,64}$/.test(job) && /^\d+$/.test(uid);
-    const join = document.getElementById("mjoin"), join2 = document.getElementById("mjoin2"), prof = document.getElementById("mprof");
+    const join = $("mjoin"), join2 = $("mjoin2"), prof = $("mprof");
     if (okIds){
       join.href = "roblox://experiences/start?placeId=" + place + "&gameInstanceId=" + encodeURIComponent(job);
       join2.href = "https://www.roblox.com/games/start?placeId=" + place + "&gameInstanceId=" + encodeURIComponent(job);
@@ -481,70 +828,153 @@
     } else {
       join.removeAttribute("href"); join2.removeAttribute("href"); prof.removeAttribute("href");
     }
+  }
+  let lastFocus = null;
+  function openUser(u){
+    modalKey = keyOf(u);
+    if (window.SealsAdminModal) window.SealsAdminModal(u);
+    fillModal(u);
+    lastFocus = document.activeElement;
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
+    $("mclose").focus({ preventScroll: true });
   }
-  function closeModal(){ modal.classList.remove("open"); modal.setAttribute("aria-hidden", "true"); }
-  document.getElementById("mclose").addEventListener("click", closeModal);
+  function closeModal(){
+    if (!modal.classList.contains("open")) return;
+    modal.classList.remove("open"); modal.setAttribute("aria-hidden", "true"); modalKey = null;
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  }
+  $("mclose").addEventListener("click", closeModal);
   modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
-  function render(list){
-    usersEl.innerHTML = "";
-    countEl.textContent = list.length + " " + plural(list.length) + " в сети";
-    if (!list.length){
-      const d = document.createElement("div");
-      d.className = "nobody";
-      d.textContent = "Сейчас никого нет в сети. Запусти Seals Hub и включи «Показывать меня на сайте» в настройках.";
-      usersEl.append(d);
-      return;
+  function makeCard(u){
+    const card = document.createElement("button");
+    card.type = "button";
+    const img = document.createElement("img");
+    img.className = "ava"; img.alt = ""; img.decoding = "async";
+    const info = document.createElement("div"); info.className = "uinfo";
+    const role = document.createElement("div"); role.className = "urole";
+    const name = document.createElement("div"); name.className = "uname";
+    const disp = document.createElement("div"); disp.className = "udisp";
+    info.append(role, name, disp);
+    card.append(img, info);
+    const entry = { el: card, u, img, role, name, disp, sig: "" };
+    card.addEventListener("click", () => openUser(entry.u));
+    card.addEventListener("animationend", e => { if (e.animationName === "uin" || e.animationName === "uflash") card.classList.remove("enter", "flash"); });
+    return entry;
+  }
+  function paint(entry, u){
+    const rk = roleKey(u.role);
+    const sig = [rk, u.username, u.display_name, u.avatar_url].join("|");
+    entry.u = u;
+    if (sig === entry.sig) return false;
+    const changed = entry.sig !== "";
+    entry.sig = sig;
+    entry.el.className = "user r-" + rk + (entry.el.classList.contains("enter") ? " enter" : "");
+    setAva(entry.img, u.avatar_url);
+    entry.role.textContent = ROLES[rk].name;
+    entry.name.textContent = u.username;
+    entry.disp.textContent = dispText(u, "в игре");
+    entry.el.setAttribute("aria-label", u.username + ", " + ROLES[rk].name);
+    if (changed && !still){ entry.el.classList.add("flash"); }
+    return true;
+  }
+  function setCount(n){
+    countEl.textContent = n + " " + plural(n) + " в сети";
+    navEl.textContent = n + " онлайн";
+    if (n !== lastCount){
+      numEl.textContent = String(n).padStart(2, "0");
+      if (lastCount !== -1 && !still){ numEl.classList.remove("bump"); void numEl.offsetWidth; numEl.classList.add("bump"); }
+      lastCount = n;
     }
+  }
+  function showEmpty(title, text){
+    let d = usersEl.querySelector(".nobody");
+    if (!d){
+      d = document.createElement("div"); d.className = "nobody";
+      const t = document.createElement("span"); t.className = "px";
+      const p = document.createElement("div");
+      d.append(t, p); usersEl.append(d);
+    }
+    d.firstChild.textContent = title; d.lastChild.textContent = text;
+  }
+
+  function render(list){
+    usersEl.querySelectorAll(".skel").forEach(s => s.remove());
+    setCount(list.length);
+    const seen = new Set();
+    let order = 0;
     list.forEach(u => {
-      const rk = roleKey(u.role);
-      const card = document.createElement("button");
-      card.className = "user r-" + rk;
-      const img = document.createElement("img");
-      img.className = "ava"; img.alt = ""; img.loading = "lazy";
-      setAva(img, u.avatar_url);
-      const info = document.createElement("div"); info.className = "uinfo";
-      const role = document.createElement("div"); role.className = "urole"; role.textContent = ROLES[rk].name;
-      const name = document.createElement("div"); name.className = "uname"; name.textContent = u.username;
-      const disp = document.createElement("div"); disp.className = "udisp";
-      disp.textContent = (u.display_name && u.display_name !== u.username) ? "@" + u.display_name : "в игре";
-      info.append(role, name, disp);
-      card.append(img, info);
-      card.addEventListener("click", () => openUser(u));
-      usersEl.append(card);
+      const k = keyOf(u);
+      if (seen.has(k)) return;
+      seen.add(k);
+      let entry = cards.get(k);
+      if (!entry){
+        entry = makeCard(u);
+        cards.set(k, entry);
+        paint(entry, u);
+        if (!still){ entry.el.classList.add("enter"); entry.el.style.setProperty("--i", firstLoad ? order : 0); }
+      } else {
+        entry.el.classList.remove("out");
+        paint(entry, u);
+      }
+      // ставим карточку на её место, только если она не там
+      const at = usersEl.children[order];
+      if (at !== entry.el) usersEl.insertBefore(entry.el, at || null);
+      order++;
+      if (modalKey === k && modal.classList.contains("open")) fillModal(u);
     });
+    for (const [k, entry] of cards){
+      if (seen.has(k)) continue;
+      cards.delete(k);
+      if (still){ entry.el.remove(); continue; }
+      entry.el.classList.remove("enter", "flash");
+      entry.el.classList.add("out");
+      setTimeout(() => entry.el.remove(), 320);
+    }
+    const empty = usersEl.querySelector(".nobody");
+    if (!seen.size) showEmpty("Пусто", "Сейчас никого нет в сети. Запусти Seals Hub и включи «Показывать меня на сайте» в настройках.");
+    else if (empty) empty.remove();
+    firstLoad = false;
   }
 
   async function loadOnline(){
+    if (inflight) return;
+    inflight = true;
+    const ctl = new AbortController();
+    const tm = setTimeout(() => ctl.abort(), 5000);
     try {
       const r = await fetch(SB_URL, {
-        method:"POST",
-        headers:{ "apikey":SB_KEY, "Content-Type":"application/json" },
-        body:"{}"
+        method: "POST",
+        headers: { "apikey": SB_KEY, "Content-Type": "application/json" },
+        body: "{}",
+        cache: "no-store",
+        signal: ctl.signal
       });
       if (!r.ok) throw new Error(r.status);
       const data = await r.json();
+      fails = 0;
       render(Array.isArray(data) ? data : []);
     } catch {
-      countEl.textContent = "Нет связи";
-      if (!usersEl.querySelector(".user")){
-        usersEl.innerHTML = "";
-        const d = document.createElement("div");
-        d.className = "nobody"; d.textContent = "Не удалось загрузить список. Попробуй обновить страницу.";
-        usersEl.append(d);
+      fails++;
+      if (fails >= 3 || firstLoad){
+        countEl.textContent = "Нет связи";
+        navEl.textContent = "нет связи";
+        if (!cards.size){
+          usersEl.querySelectorAll(".skel").forEach(s => s.remove());
+          showEmpty("Нет связи", "Не удалось загрузить список. Проверь интернет, страница попробует ещё раз сама.");
+        }
       }
+    } finally {
+      clearTimeout(tm);
+      inflight = false;
     }
   }
   loadOnline();
   window.SealsReloadOnline = loadOnline;
-  setInterval(() => { if (!document.hidden) loadOnline(); }, 2000);
-
-  // появление секций при прокрутке
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold:.12 });
-  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  setInterval(() => { if (!document.hidden) loadOnline(); }, 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) loadOnline(); });
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -552,6 +982,7 @@
 (() => {
   // ===== админ-панель: выдача ролей =====
   // Безопасность держится на Supabase: функции проверяют вход + 2FA + список админов.
+  // Панель видна только по ссылке с #admin.
   const SB = "https://esrtcgptxemaphbteokx.supabase.co";
   const KEY = "sb_publishable_WQqiUsZmQwNnO1YeRpbm5g_voABCYox";
   const ROLES = {
@@ -569,10 +1000,12 @@
   });
 
   let isAdmin = false, factorId = null, grantRole = "premium", modalUser = null, busy = false;
+  const onAdminHash = () => location.hash === "#admin";
 
   function show(which){
     ["aLogin", "aMfa", "aPanel"].forEach(id => { $(id).hidden = id !== which; });
     sec.hidden = !which;
+    if (which) requestAnimationFrame(() => sec.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
   function say(el, text, ok){
     el.textContent = text || "";
@@ -598,10 +1031,11 @@
       if (k === "none" && !withNone) return;
       const b = document.createElement("button");
       b.type = "button";
-      b.className = "chip" + (k === "none" ? " none" : "") + (k === current ? " on" : "");
+      b.className = "rb rc";
       b.style.setProperty("--rc", ROLES[k].c);
-      const dot = document.createElement("i");
-      b.append(dot, document.createTextNode(ROLES[k].n));
+      b.setAttribute("aria-pressed", k === current);
+      const s = document.createElement("span"); s.textContent = ROLES[k].n;
+      b.append(s);
       b.addEventListener("click", () => onPick(k));
       box.append(b);
     });
@@ -612,27 +1046,31 @@
     const { data: { session } } = await sb.auth.getSession();
     if (!session){
       setAdmin(false);
-      show(location.hash === "#admin" ? "aLogin" : null);
+      show(onAdminHash() ? "aLogin" : null);
       return;
     }
     const { data: aal, error: aalErr } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aalErr){ show("aLogin"); say($("aLoginMsg"), human(aalErr)); return; }
-    if (aal.currentLevel !== "aal2"){ setAdmin(false); await startMfa(); return; }
+    if (aalErr){ show(onAdminHash() ? "aLogin" : null); say($("aLoginMsg"), human(aalErr)); return; }
+    if (aal.currentLevel !== "aal2"){
+      setAdmin(false);
+      if (onAdminHash()) await startMfa(); else show(null);
+      return;
+    }
 
     const { data: ok, error } = await sb.rpc("seals_am_admin");
     if (error || ok !== true){
       await sb.auth.signOut();
       setAdmin(false);
-      show("aLogin");
+      show(onAdminHash() ? "aLogin" : null);
       say($("aLoginMsg"), "У этого аккаунта нет прав админа");
       return;
     }
     $("aWho").textContent = session.user.email || "admin";
     setAdmin(true);
+    if (!onAdminHash()){ show(null); return; }
     show("aPanel");
     renderGrantChips();
     loadRoles();
-    if (location.hash !== "#admin") sec.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function setAdmin(v){
     isAdmin = v;
@@ -666,7 +1104,7 @@
       factorId = verified.id;
       $("aEnroll").hidden = true;
       $("aMfaText").textContent = "Введи 6-значный код из приложения-аутентификатора.";
-      $("aCode").focus();
+      $("aCode").focus({ preventScroll: true });
       return;
     }
     for (const f of all){
@@ -700,7 +1138,7 @@
   async function logout(){
     await sb.auth.signOut();
     setAdmin(false);
-    if (location.hash === "#admin") history.replaceState(null, "", location.pathname);
+    if (onAdminHash()) history.replaceState(null, "", location.pathname + location.search);
     show(null);
   }
   $("aCancel").addEventListener("click", logout);
@@ -709,7 +1147,7 @@
   // ===== выдача по нику =====
   function renderGrantChips(){
     chipRow($("aChips"), grantRole, k => { grantRole = k; renderGrantChips(); }, true);
-    $("aGrantBtn").textContent = grantRole === "none" ? "Снять роль" : "Выдать " + ROLES[grantRole].n;
+    $("aGrantTxt").textContent = grantRole === "none" ? "Снять роль" : "Выдать " + ROLES[grantRole].n;
   }
 
   async function setRole(params){
@@ -752,11 +1190,12 @@
       box.append(d);
       return;
     }
-    data.forEach(r => {
+    data.forEach((r, i) => {
       const info = ROLES[r.role] || { n: r.role, c: "#9aa4b1" };
       const row = document.createElement("div");
       row.className = "arow";
       row.style.setProperty("--rc", info.c);
+      row.style.animationDelay = Math.min(i, 12) * 30 + "ms";
       const ini = document.createElement("div");
       ini.className = "ainit";
       ini.textContent = (r.username || "?").charAt(0).toUpperCase();
@@ -774,13 +1213,21 @@
       const x = document.createElement("button");
       x.className = "xbtn";
       x.type = "button";
-      x.title = "Снять роль";
-      x.textContent = "✕";
+      x.textContent = "Снять";
+      x.setAttribute("aria-label", "Снять роль " + info.n + " у " + r.username);
+      let sureTm;
       x.addEventListener("click", async () => {
-        if (busy || !confirm("Снять роль " + info.n + " у " + r.username + "?")) return;
+        if (busy) return;
+        if (!x.classList.contains("sure")){
+          x.classList.add("sure"); x.textContent = "Точно?";
+          clearTimeout(sureTm);
+          sureTm = setTimeout(() => { x.classList.remove("sure"); x.textContent = "Снять"; }, 3000);
+          return;
+        }
+        clearTimeout(sureTm);
         lock(x, true);
-        try { await setRole({ p_role: "none", p_user_id: Number(r.user_id), p_username: r.username }); }
-        catch (err){ alert(human(err)); }
+        try { await setRole({ p_role: "none", p_user_id: Number(r.user_id), p_username: r.username }); if (window.SealsToast) window.SealsToast("Роль снята у " + r.username); }
+        catch (err){ if (window.SealsToast) window.SealsToast(human(err)); x.classList.remove("sure"); x.textContent = "Снять"; }
         lock(x, false);
       });
       row.append(ini, box2, pill, x);

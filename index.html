@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;900&family=Golos+Text:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+<script>try{if(sessionStorage.getItem("sh_wipe")&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("wiping")}catch(e){}</script>
 <style>
 /* Arcade: пиксельная шапка → бегущая строка → пульт функций → роли → онлайн → запуск → FAQ → админка (только #admin). */
 :root{
@@ -310,6 +311,88 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 @media (max-width:520px){section{padding-block:64px}.hero-in{padding-block:52px 48px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}html{scroll-behavior:auto}.rv.pre{opacity:1;transform:none}}
+
+/* ======================= ДОБАВЛЕНО: SealsAI и новые анимации ======================= */
+/* кнопка ИИ (голубая, как роль Premium) и кнопки с иконкой */
+.rb.ai{color:#04121c;--bg:#4cc3ff;--bg-a:#22a6e6;--sl:#b3e6ff;--sd:#0b6b99}
+.rb.ai>span{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.rb.ai svg{width:18px;height:auto;flex:none}
+.navai>span{padding:.5rem .75rem}
+.navai em{font-style:normal}
+@media (max-width:560px){.navai em{display:none}.navai>span{padding:.45rem .55rem}}
+@media (max-width:420px){.nav-r .rb.navai{display:inline-flex}}
+.mag{translate:var(--mx,0) var(--my,0);transition:transform .15s,translate .25s cubic-bezier(.2,1,.3,1)}
+/* полоска прокрутки под шапкой */
+.progress{position:absolute;left:0;right:0;bottom:-1px;height:3px;pointer-events:none}
+.progress i{display:block;height:100%;width:100%;background:var(--yellow);transform-origin:left;transform:scaleX(var(--p,0))}
+/* переход между страницами */
+#wipe{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
+html.wiping body::after{content:"";position:fixed;inset:0;background:#facc15;z-index:89}
+/* заголовок чуть поворачивается за мышкой */
+.hero-in{perspective:900px}
+.hero h1{transition:transform .5s cubic-bezier(.2,1,.3,1);transform-style:preserve-3d}
+/* тюлень гуляет по бегущей строке */
+.ticker{position:relative}
+.walker{position:absolute;left:0;bottom:1px;width:30px;z-index:2;pointer-events:none;animation:walk 18s linear infinite}
+.walker svg{display:block;width:100%;height:auto;animation:hop .5s steps(2) infinite}
+.ticker:hover .walker,.ticker:hover .walker svg{animation-play-state:paused}
+@keyframes walk{from{transform:translateX(-40px)}to{transform:translateX(calc(100vw + 40px))}}
+@keyframes hop{50%{transform:translateY(-2px)}}
+/* шаги: жёлтая линия прорисовывается */
+.steps{position:relative}
+.steps::before{content:"";position:absolute;left:0;top:-2px;height:3px;width:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left;transition:transform 1.4s steps(14)}
+.steps.lit::before{transform:scaleX(1)}
+/* общий пиксельный тюлень */
+.seal [data-m]{display:none}
+.seal[data-mood="happy"] [data-m="happy"],.seal:not([data-mood]) [data-m="happy"],.seal[data-mood="talk"] [data-m="talk"],.seal[data-mood="wow"] [data-m="wow"]{display:inline}
+.seal .eyes{transition:transform .14s steps(2)}
+.seal .eye{transform-box:fill-box;transform-origin:center;transition:transform .08s steps(2)}
+.seal.blink .eye{transform:scaleY(.2)}
+/* секция SealsAI */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.ai-points{list-style:none;margin:0 0 30px;padding:0;display:flex;flex-direction:column}
+.ai-points li{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--rule);font-size:16px}
+.ai-points li:last-child{border-bottom:1px solid var(--rule)}
+.ai-points b{font:400 9px var(--pixel);background:#4cc3ff;color:#04121c;padding:4px 7px;border-radius:2px;transition:transform .2s}
+.ai-points li:hover b{transform:rotate(-6deg) scale(1.1)}
+.demo{background:#0f1218;color:#e9edf3;border:2px solid #000;border-radius:4px;box-shadow:8px 8px 0 #4cc3ff;overflow:hidden;min-width:0}
+.demo-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#161b23;border-bottom:2px solid #000}
+.demo-ava{width:36px;height:36px;background:var(--yellow);border:2px solid #000;border-radius:3px;display:grid;place-items:center;overflow:hidden;flex:none}
+.demo-ava svg{width:28px;margin-top:5px}
+.demo-bar b{font:400 10px var(--pixel);color:var(--yellow);text-transform:uppercase;letter-spacing:.03em;font-weight:400;flex:1}
+.demo-bar em{font-style:normal;font-size:12px;color:#9aa4b1;display:flex;align-items:center;gap:6px}
+.demo-bar em::before{content:"";width:8px;height:8px;background:var(--r-tester)}
+.demo.busy .demo-bar em::before{background:var(--yellow);animation:blink .4s steps(2) infinite}
+.demo-body{height:300px;padding:16px 14px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;overflow:hidden}
+.dm{max-width:86%;padding:9px 13px;border:2px solid #000;border-radius:3px;font-size:14px;line-height:1.5;box-shadow:3px 3px 0 #000;transform-origin:0 100%}
+.dm.me{align-self:flex-end;background:var(--yellow);color:#1a1400;transform-origin:100% 100%}
+.dm.bot{background:#1a212c}
+.dm.dots{display:flex;gap:5px;padding:12px 14px}
+.dm.dots i{width:7px;height:7px;background:var(--yellow);animation:ddot 1s steps(3) infinite}
+.dm.dots i:nth-child(2){animation-delay:.15s}.dm.dots i:nth-child(3){animation-delay:.3s}
+@keyframes ddot{50%{transform:translateY(-5px)}}
+.dm code{font:500 12px var(--mono);background:#0b0e13;color:#d9f99d;padding:1px 5px;border-radius:2px}
+.dm .cur{display:inline-block;width:.5em;height:1em;background:#1a1400;vertical-align:-.15em;margin-left:1px;animation:blink .7s steps(2) infinite}
+.dm .w{animation:dwIn .35s ease-out both;animation-delay:calc(var(--i) * 30ms)}
+@keyframes dwIn{from{opacity:0;filter:blur(4px)}}
+@media (max-width:880px){.ai-grid{grid-template-columns:1fr;gap:36px}}
+/* плавающая кнопка ИИ */
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;background:#0f1218;color:#fff;text-decoration:none;border:2px solid #000;border-radius:4px;box-shadow:4px 4px 0 #4cc3ff;opacity:0;transform:translateY(24px) scale(.6);pointer-events:none;transition:opacity .2s,transform .45s cubic-bezier(.2,1.6,.4,1),box-shadow .2s}
+.fab.show{opacity:1;transform:none;pointer-events:auto}
+.fab:hover{box-shadow:6px 6px 0 #4cc3ff}
+.fab:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #4cc3ff}
+.fab:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.fab-ava{width:42px;height:42px;background:var(--yellow);border:2px solid #000;border-radius:3px;display:grid;place-items:center;overflow:hidden;flex:none}
+.fab-ava svg{width:32px;margin-top:6px}
+.fab-t{font:400 9px/1.4 var(--pixel);text-transform:uppercase;letter-spacing:.03em}
+.fab-t small{display:block;font:500 12px var(--body);text-transform:none;letter-spacing:0;color:#9aa4b1}
+.fab.wiggle .fab-ava{animation:wig .6s steps(6)}
+@keyframes wig{20%{transform:rotate(-10deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+body:has(.modal.open) .fab{opacity:0;pointer-events:none}
+@media (max-width:520px){.fab{padding:6px}.fab-t{display:none}}
+.seal-ico{display:inline-block;width:20px;line-height:0}
+.seal-ico svg{width:100%;height:auto}
+.aisec .rb.big{margin-top:2px}
 </style>
 </head>
 <body>
@@ -317,12 +400,14 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 <nav class="top">
   <div class="wrap">
     <a class="brand" href="#top"><canvas id="logo" width="8" height="8" aria-hidden="true"></canvas>Seals Hub</a>
-    <div class="links"><a href="#features">Функции</a><a href="#roles">Роли</a><a href="#online">Онлайн</a><a href="#launch">Запуск</a><a href="#faq">FAQ</a></div>
+    <div class="links"><a href="#features">Функции</a><a href="#roles">Роли</a><a href="#online">Онлайн</a><a href="#launch">Запуск</a><a href="#faq">FAQ</a><a href="ai.html" data-wipe>SealsAI</a></div>
     <div class="nav-r">
       <a class="livepill" href="#online"><i></i><span id="navCount">…</span></a>
+      <a class="rb ai navai" href="ai.html" data-wipe aria-label="ИИ помощник SealsAI"><span><span class="seal-ico" data-seal></span><em>ИИ</em></span></a>
       <button class="rb yellow" type="button" data-copy><span>Скопировать</span></button>
     </div>
   </div>
+  <div class="progress" aria-hidden="true"><i id="prog"></i></div>
 </nav>
 
 <main id="top">
@@ -343,12 +428,14 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
       <div class="cta fade-up" style="--d:850ms">
         <button class="rb yellow big" type="button" data-copy><span>Скопировать скрипт</span></button>
         <a class="rb dark big" href="#launch"><span>Как запустить</span></a>
+        <a class="rb ai big" href="ai.html" data-wipe><span><span class="seal-ico" data-seal></span>ИИ помощник</span></a>
       </div>
       <div class="hint px fade-up" style="--d:1000ms">Жёлтую ручку можно тянуть</div>
     </div>
   </header>
 
   <div class="ticker" aria-hidden="true">
+    <span class="walker" data-seal></span>
     <div class="ticker-track">
       <span>Player ESP</span><span>Chams</span><span>Gun ESP</span><span>Chams Self</span><span>Паки анимаций</span><span>15 языков</span><span>Цвет по роли</span><span>Mobile Delta</span>
       <span>Player ESP</span><span>Chams</span><span>Gun ESP</span><span>Chams Self</span><span>Паки анимаций</span><span>15 языков</span><span>Цвет по роли</span><span>Mobile Delta</span>
@@ -454,6 +541,24 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
+  <section id="ai" class="aisec">
+    <div class="wrap ai-grid">
+      <div>
+        <div class="sh rv"><span class="px">ИИ помощник</span><h2>Спроси тюленя</h2><p>SealsAI знает Seals Hub изнутри: запуск в Delta, все вкладки меню, роли и частые ошибки. Тот же тюлень, что в приложении Seals_Manager.</p></div>
+        <ul class="ai-points rv" style="--i:1">
+          <li><b>01</b>Отвечает за пару секунд</li>
+          <li><b>02</b>Пишет на твоём языке</li>
+          <li><b>03</b>60 вопросов в день бесплатно</li>
+        </ul>
+        <div class="rv" style="--i:2"><a class="rb ai big" href="ai.html" data-wipe><span><span class="seal-ico" data-seal></span>Открыть SealsAI</span></a></div>
+      </div>
+      <div class="demo rv" id="demo" style="--i:2" aria-hidden="true">
+        <div class="demo-bar"><span class="demo-ava" data-seal></span><b>SealsAI</b><em id="demoState">онлайн</em></div>
+        <div class="demo-body" id="demoBody"></div>
+      </div>
+    </div>
+  </section>
+
   <section id="faq">
     <div class="wrap">
       <div class="sh rv"><span class="px">FAQ</span><h2>Частые вопросы</h2></div>
@@ -463,6 +568,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
         <details><summary>Как поменять язык?</summary><p>Язык переключается в настройках внутри меню, доступно 15 языков.</p></details>
         <details><summary>Можно получить бан?</summary><p>Любые сторонние скрипты нарушают правила Roblox, и риск бана есть всегда. Для экспериментов используй второй аккаунт.</p></details>
         <details><summary>Как попасть в список «В сети»?</summary><p>В меню скрипта открой Settings и включи «Показывать меня на сайте». Если выключить, тебя не будет видно на сайте.</p></details>
+        <details><summary>Не нашёл ответ?</summary><p>Спроси тюленя: <a href="ai.html" data-wipe>ИИ помощник SealsAI</a> отвечает на вопросы про Seals Hub на любом языке.</p></details>
       </div>
     </div>
   </section>
@@ -544,6 +650,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 <footer><div class="wrap"><span>Seals Hub · by MrPomkin</span><span>MM2 · Delta</span></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-t"></span></div>
 <canvas id="fx" aria-hidden="true"></canvas>
+<a class="fab" id="fab" href="ai.html" data-wipe aria-label="Открыть ИИ помощника SealsAI"><span class="fab-ava" data-seal></span><span class="fab-t">ИИ помощник<small>Спроси SealsAI</small></span></a>
+<canvas id="wipe" aria-hidden="true"></canvas>
 
 <script>
 (() => {
@@ -1269,6 +1377,262 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
   window.addEventListener("hashchange", refresh);
   sb.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT"){ setAdmin(false); } });
   refresh();
+})();
+</script>
+<script>
+/* ======================= ДОБАВЛЕНО: SealsAI и новые анимации ======================= */
+/* SealsMotion: пружинные анимации (как во Framer Motion) на Web Animations API */
+window.SealsMotion = (() => {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const okLinear = !!(window.CSS && CSS.supports && CSS.supports("animation-timing-function", "linear(0, 1)"));
+  const cache = {};
+  function spring(k, c){
+    const key = k + "/" + c;
+    if (cache[key]) return cache[key];
+    let x = 0, v = 0, t = 0;
+    const dt = 1 / 240, s = [0];
+    while (t < 3){
+      const a = -k * (x - 1) - c * v;
+      v += a * dt; x += v * dt; t += dt; s.push(x);
+      if (Math.abs(x - 1) < .0006 && Math.abs(v) < .0006) break;
+    }
+    const n = 56, pts = [];
+    for (let i = 0; i <= n; i++) pts.push(+s[Math.round(i / n * (s.length - 1))].toFixed(4));
+    pts[n] = 1;
+    return cache[key] = { easing: okLinear ? "linear(" + pts.join(",") + ")" : "cubic-bezier(.2,1.3,.4,1)", duration: Math.max(200, Math.round(t * 1000)) };
+  }
+  const P = { snappy: [420, 30], bouncy: [260, 15], soft: [130, 20], wobbly: [200, 9] };
+  function animate(el, kf, o = {}){
+    if (still || !el || !el.animate) return null;
+    const p = P[o.spring || "snappy"] || P.snappy, s = spring(p[0], p[1]);
+    return el.animate(kf, { duration: o.duration || s.duration, easing: o.easing || s.easing, delay: o.delay || 0, fill: o.fill || "backwards" });
+  }
+  return { animate, still };
+})();
+
+(() => {
+  const root = document.documentElement;
+  const $ = id => document.getElementById(id);
+  const M = window.SealsMotion, still = M.still;
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  // ===== пиксельный тюлень SealsAI (SVG) =====
+  const ROWS = [
+    ".......######.......", ".....##bbbbbb##.....", "....#bbbbbbbbbb#....", "...#bbbbbbbbbbbb#...",
+    "..#bbbbbbbbbbbbbb#..", "..#bbbbbbbbbbbbbb#..", ".#bbbbbbbbbbbbbbbb#.", ".#bbbbbbbbbbbbbbbb#.",
+    ".#bbbbbbbbbbbbbbbb#.", ".#bppbbmmmmmmbbppb#.", ".#bbbbmmmmmmmmbbbb#.", "..#bbbbmmmmmmbbbb#..",
+    "..#bbbbbbbbbbbbbb#..", ".#bbbbbllllllbbbbb#.", "#bbbbbllllllllbbbbb#", "#ssbbbllllllllbbbss#",
+    ".##################."
+  ];
+  const COL = { "#": "#1b1f24", b: "#d9dee5", s: "#aab3bf", p: "#f7a1c4", m: "#f3f5f8", l: "#eef1f5" };
+  let BODY = "";
+  ROWS.forEach((row, y) => {
+    let x = 0;
+    while (x < row.length){
+      const ch = row[x];
+      if (ch === "."){ x++; continue; }
+      let e = x; while (e < row.length && row[e] === ch) e++;
+      BODY += '<rect x="' + x + '" y="' + y + '" width="' + (e - x) + '" height="1" fill="' + COL[ch] + '"/>';
+      x = e;
+    }
+  });
+  const eye = x => '<g class="eye"><rect x="' + x + '" y="6" width="2" height="2" fill="#111"/><rect x="' + x + '" y="6" width="1" height="1" fill="#fff"/></g>';
+  const SVG = '<svg class="seal" viewBox="0 0 20 17" shape-rendering="crispEdges" aria-hidden="true" data-mood="happy">' + BODY +
+    '<g class="eyes">' + eye(5) + eye(13) + '</g><rect x="9" y="9" width="2" height="1" fill="#1b1f24"/>' +
+    '<g fill="#1b1f24"><g data-m="happy"><rect x="8" y="10" width="1" height="1"/><rect x="9" y="11" width="2" height="1"/><rect x="11" y="10" width="1" height="1"/></g>' +
+    '<g data-m="talk"><rect x="9" y="10" width="2" height="1"/><rect x="9" y="11" width="2" height="1" fill="#f472b6"/></g>' +
+    '<g data-m="wow"><rect x="9" y="10" width="2" height="2"/></g></g></svg>';
+  const seals = [];
+  document.querySelectorAll("[data-seal]").forEach(host => {
+    host.insertAdjacentHTML("beforeend", SVG);
+    const svg = host.lastElementChild;
+    seals.push(svg);
+    if (still) return;
+    (function blink(){
+      setTimeout(() => { svg.classList.add("blink"); setTimeout(() => { svg.classList.remove("blink"); blink(); }, 130); }, 1800 + Math.random() * 3800);
+    })();
+  });
+  // глаза следят за пальцем или мышкой
+  let lx = 0, ly = 0, ltk = false;
+  function look(){
+    ltk = false;
+    for (const s of seals){
+      const r = s.getBoundingClientRect();
+      if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;
+      const dx = lx - (r.left + r.width / 2), dy = ly - (r.top + r.height * .4);
+      const tx = Math.abs(dx) > r.width * .6 ? Math.sign(dx) : 0;
+      const ty = dy < -r.height * .6 ? -1 : (dy > r.height * 1.4 ? 1 : 0);
+      s.querySelector(".eyes").style.transform = "translate(" + tx + "px," + ty + "px)";
+    }
+  }
+  if (!still) addEventListener("pointermove", e => { lx = e.clientX; ly = e.clientY; if (!ltk){ ltk = true; requestAnimationFrame(look); } }, { passive: true });
+
+  // ===== переход между страницами: пиксельная шторка =====
+  (() => {
+    const cv = $("wipe"), ctx = cv.getContext("2d");
+    let cols = 0, rows = 0, cell = 0, raf = 0;
+    function size(){
+      const d = Math.min(devicePixelRatio || 1, 2);
+      cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+      cell = Math.max(36, Math.ceil(Math.max(innerWidth, innerHeight) / 18));
+      cols = Math.ceil(innerWidth / cell); rows = Math.ceil(innerHeight / cell);
+    }
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    function draw(p, cover){
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      const span = cols + rows - 2 || 1;
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+        const k = ease(Math.min(1, Math.max(0, (p - (c + r) / span * .55) / .45)));
+        const s = Math.ceil(cell * (cover ? k : 1 - k));
+        if (s <= 0) continue;
+        ctx.fillStyle = ((c * 13 + r * 7 + c * r) % 6 === 0) ? "#eab308" : "#facc15";
+        ctx.fillRect(c * cell + (cell - s) / 2 - .5, r * cell + (cell - s) / 2 - .5, s + 1, s + 1);
+      }
+    }
+    function run(cover, ms, done){
+      cancelAnimationFrame(raf);
+      const t0 = performance.now();
+      (function f(now){
+        const p = Math.min(1, (now - t0) / ms);
+        draw(p, cover);
+        if (p < 1) raf = requestAnimationFrame(f); else if (done) done();
+      })(t0);
+    }
+    size(); addEventListener("resize", size);
+    let fromWipe = false;
+    try { fromWipe = !!sessionStorage.getItem("sh_wipe"); sessionStorage.removeItem("sh_wipe"); } catch {}
+    if (fromWipe && !still){ draw(0, false); root.classList.remove("wiping"); run(false, 620, () => ctx.clearRect(0, 0, innerWidth, innerHeight)); }
+    else root.classList.remove("wiping");
+    addEventListener("pageshow", e => { if (e.persisted){ cancelAnimationFrame(raf); ctx.clearRect(0, 0, innerWidth, innerHeight); cv.style.pointerEvents = "none"; root.classList.remove("wiping"); } });
+    document.addEventListener("click", e => {
+      const a = e.target.closest("a[data-wipe]");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === "_blank" || still) return;
+      e.preventDefault();
+      const href = a.href;
+      try { sessionStorage.setItem("sh_wipe", "1"); } catch {}
+      cv.style.pointerEvents = "auto";
+      run(true, 460, () => { location.href = href; });
+      setTimeout(() => { location.href = href; }, 1200);
+    });
+  })();
+
+  // ===== полоска прокрутки =====
+  (() => {
+    const bar = $("prog");
+    let tk = false;
+    function upd(){ tk = false; const h = root.scrollHeight - innerHeight; bar.style.setProperty("--p", h > 0 ? Math.min(1, scrollY / h).toFixed(4) : 0); }
+    addEventListener("scroll", () => { if (!tk){ tk = true; requestAnimationFrame(upd); } }, { passive: true });
+    addEventListener("resize", upd);
+    upd();
+  })();
+
+  if (fine && !still){
+    // заголовок наклоняется за мышкой
+    const hero = document.querySelector(".hero"), h1 = hero.querySelector("h1");
+    hero.addEventListener("pointermove", e => {
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      h1.style.transform = "rotateY(" + (x * 14).toFixed(2) + "deg) rotateX(" + (-y * 10).toFixed(2) + "deg)";
+    });
+    hero.addEventListener("pointerleave", () => { h1.style.transform = ""; });
+    // магнитные кнопки
+    document.querySelectorAll(".hero .cta .rb, .aisec .rb").forEach(b => {
+      b.classList.add("mag");
+      b.addEventListener("pointermove", e => {
+        const r = b.getBoundingClientRect();
+        b.style.setProperty("--mx", ((e.clientX - r.left) / r.width - .5) * 10 + "px");
+        b.style.setProperty("--my", ((e.clientY - r.top) / r.height - .5) * 8 + "px");
+      });
+      b.addEventListener("pointerleave", () => { b.style.setProperty("--mx", "0px"); b.style.setProperty("--my", "0px"); });
+    });
+  }
+
+  // ===== подписи разделов «расшифровываются», шаги прорисовываются =====
+  function scramble(el){
+    const full = el.dataset.full || (el.dataset.full = el.textContent);
+    const ABC = "█▓▒░#@$%&*+=?<>01";
+    let f = 0;
+    const total = full.length * 2 + 8;
+    (function tick(){
+      el.textContent = [...full].map((ch, i) => ch === " " ? " " : (f > i * 2 + 6 ? ch : ABC[(Math.random() * ABC.length) | 0])).join("");
+      if (++f <= total) setTimeout(tick, 32); else el.textContent = full;
+    })();
+  }
+  if (!still && "IntersectionObserver" in window){
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      if (e.target.classList.contains("steps")) e.target.classList.add("lit"); else scramble(e.target);
+      io.unobserve(e.target);
+    }), { threshold: .4 });
+    document.querySelectorAll("main > section:not(#admin) .sh > .px, .steps").forEach(el => io.observe(el));
+  } else document.querySelectorAll(".steps").forEach(s => s.classList.add("lit"));
+
+  // ===== плавающая кнопка ИИ: появляется после шапки =====
+  (() => {
+    const fab = $("fab");
+    let pastHero = false, aiInView = false;
+    const set = () => fab.classList.toggle("show", pastHero && !aiInView);
+    if (!("IntersectionObserver" in window)){ fab.classList.add("show"); return; }
+    new IntersectionObserver(es => { pastHero = !es[0].isIntersecting; set(); }).observe(document.querySelector(".hero"));
+    new IntersectionObserver(es => { aiInView = es[0].isIntersecting; set(); }, { threshold: .25 }).observe($("ai"));
+    if (!still) setInterval(() => {
+      if (!fab.classList.contains("show") || document.hidden) return;
+      fab.classList.remove("wiggle"); void fab.offsetWidth; fab.classList.add("wiggle");
+    }, 6000);
+  })();
+
+  // ===== живой пример чата в секции SealsAI =====
+  (() => {
+    const box = $("demoBody"), demo = $("demo"), state = $("demoState");
+    const dseal = demo.querySelector(".seal");
+    const QA = [
+      ["Как запустить скрипт?", "Зайди в MM2 через Delta, вставь скрипт с сайта и нажми Execute. Меню откроется само."],
+      ["Какие есть роли?", "Default, Premium, Tester, Stepan и Owner. У каждой свой цвет меню, у Owner золотой."],
+      ["Как попасть в онлайн на сайте?", "В настройках меню включи «Показывать меня на сайте», и ты появишься в списке за пару секунд."],
+      ["Is there English?", "Yes! The menu has 15 languages, and I answer in the one you write in."]
+    ];
+    const add = (cls, text) => {
+      const d = document.createElement("div"); d.className = "dm " + cls;
+      if (text != null) d.textContent = text;
+      box.append(d);
+      while (box.children.length > 5) box.firstElementChild.remove();
+      return d;
+    };
+    if (still){ QA.slice(0, 2).forEach(([q, a]) => { add("me", q); add("bot", a); }); return; }
+    let visible = false, wake = null;
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible && wake){ wake(); wake = null; } }, { threshold: .3 }).observe(demo);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const ready = () => visible && !document.hidden ? Promise.resolve() : new Promise(r => { wake = r; const t = setInterval(() => { if (visible && !document.hidden){ clearInterval(t); r(); } }, 500); });
+    const pop = (el, origin) => M.animate(el, [{ opacity: 0, transform: "translateY(12px) scale(.85)" }, { opacity: 1, transform: "none" }], { spring: "bouncy" });
+    (async function loop(i){
+      await ready();
+      const [q, a] = QA[i % QA.length];
+      const me = add("me", ""); pop(me);
+      const cur = document.createElement("span"); cur.className = "cur";
+      const tn = document.createTextNode(""); me.append(tn, cur);
+      for (let k = 1; k <= q.length; k++){ tn.data = q.slice(0, k); await sleep(38); }
+      cur.remove();
+      await sleep(350);
+      demo.classList.add("busy"); state.textContent = "думает…"; dseal.dataset.mood = "wow";
+      const dots = add("bot dots"); dots.innerHTML = "<i></i><i></i><i></i>"; pop(dots);
+      await sleep(1100);
+      dots.remove();
+      const bot = add("bot");
+      a.split(/(\s+)/).forEach((p, n) => {
+        if (/^\s+$/.test(p)){ bot.append(p); return; }
+        const w = document.createElement("span"); w.className = "w"; w.style.setProperty("--i", n / 2 | 0); w.textContent = p; bot.append(w);
+      });
+      pop(bot);
+      state.textContent = "печатает…";
+      let open = false;
+      const talk = setInterval(() => { open = !open; dseal.dataset.mood = open ? "talk" : "happy"; }, 140);
+      await sleep(a.split(/\s+/).length * 30 + 400);
+      clearInterval(talk); dseal.dataset.mood = "happy";
+      demo.classList.remove("busy"); state.textContent = "онлайн";
+      await sleep(2600);
+      loop(i + 1);
+    })(0);
+  })();
 })();
 </script>
 </body>

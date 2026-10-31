@@ -611,12 +611,13 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
             <p class="sub">Впиши ник в Roblox и выбери роль. Скрипт игрока подхватит её за пару секунд.</p>
             <label class="field"><span>Ник в Roblox</span><input class="inp" id="aNick" placeholder="например, pomi_55" maxlength="20" required></label>
             <div class="chips" id="aChips"></div>
+            <label class="field" id="aDaysF"><span>Срок</span><select class="inp" id="aDays"><option value="">Навсегда</option><option value="1">1 день</option><option value="2.5">2.5 дня</option><option value="7">7 дней</option><option value="30">30 дней</option><option value="365">1 год</option></select></label>
             <button class="rb yellow big wide" id="aGrantBtn" type="submit"><span id="aGrantTxt">Выдать</span></button>
             <div class="astatus" id="aGrantMsg"></div>
           </form>
           <div class="acard" style="animation-delay:80ms">
             <h3>Выданные роли</h3>
-            <p class="sub">Нажми «Снять» два раза, чтобы забрать роль.</p>
+            <p class="sub">Нажми «Снять» два раза, чтобы забрать роль или снять бан. Роли со сроком снимаются сами.</p>
             <div class="alist" id="aList"><div class="aempty">Загрузка…</div></div>
           </div>
         </div>
@@ -1097,6 +1098,7 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
     premium: { n: "Premium", c: "#4cc3ff" },
     tester:  { n: "Tester",  c: "#5fd16b" },
     stepan:  { n: "Stepan",  c: "#ff4d4d" },
+    banned:  { n: "Бан",     c: "#ff8a3d" },
     none:    { n: "Снять",   c: "#9aa4b1" }
   };
   const $ = id => document.getElementById(id);
@@ -1255,11 +1257,12 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
   // ===== выдача по нику =====
   function renderGrantChips(){
     chipRow($("aChips"), grantRole, k => { grantRole = k; renderGrantChips(); }, true);
-    $("aGrantTxt").textContent = grantRole === "none" ? "Снять роль" : "Выдать " + ROLES[grantRole].n;
+    $("aGrantTxt").textContent = grantRole === "none" ? "Снять роль" : grantRole === "banned" ? "Заблокировать" : "Выдать " + ROLES[grantRole].n;
+    $("aDaysF").hidden = grantRole === "none";
   }
 
   async function setRole(params){
-    const { data, error } = await sb.rpc("seals_admin_set_role", params);
+    const { data, error } = await sb.rpc("seals_admin_set_role2", params);
     if (error) throw error;
     loadRoles();
     if (window.SealsReloadOnline) window.SealsReloadOnline();
@@ -1274,10 +1277,13 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
     lock($("aGrantBtn"), true);
     say($("aGrantMsg"), "Ищем игрока…", true);
     try {
-      const r = await setRole({ p_role: grantRole, p_username: nick });
+      const days = grantRole === "none" || !$("aDays").value ? null : Number($("aDays").value);
+      const r = await setRole({ p_role: grantRole, p_username: nick, p_days: days });
+      const term = days ? " на " + $("aDays").selectedOptions[0].textContent : "";
       say($("aGrantMsg"), grantRole === "none"
         ? "Роль снята у " + r.username
-        : r.username + " теперь " + ROLES[grantRole].n, true);
+        : grantRole === "banned" ? r.username + " заблокирован" + term
+        : r.username + " теперь " + ROLES[grantRole].n + term, true);
       $("aNick").value = "";
     } catch (err){
       say($("aGrantMsg"), human(err));
@@ -1288,7 +1294,7 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
   // ===== список выданных =====
   async function loadRoles(){
     const box = $("aList");
-    const { data, error } = await sb.rpc("seals_admin_roles");
+    const { data, error } = await sb.rpc("seals_admin_roles2");
     if (error){ box.innerHTML = ""; const d = document.createElement("div"); d.className = "aempty"; d.textContent = human(error); box.append(d); return; }
     box.innerHTML = "";
     if (!data || !data.length){
@@ -1313,7 +1319,15 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
       a.textContent = r.username;
       if (/^\d+$/.test(String(r.user_id))){ a.href = "https://www.roblox.com/users/" + r.user_id + "/profile"; a.target = "_blank"; a.rel = "noopener"; }
       const sm = document.createElement("small");
-      sm.textContent = "с " + new Date(r.granted_at).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      const fmt = d => new Date(d).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      let left = "навсегда";
+      if (r.expires_at){
+        let sec = Math.max(0, (Date.parse(r.expires_at) - Date.now()) / 1000);
+        const d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60);
+        left = "ещё " + (d ? d + " д " : "") + (d || h ? h + " ч " : "") + m + " мин (до " + fmt(r.expires_at) + ")";
+      }
+      const by = { site: "сайт", sealsai: "SealsAI", tg: "Telegram", code: "промокод" }[String(r.granted_by || "").split(":")[0]] || "";
+      sm.textContent = "с " + fmt(r.granted_at) + " · " + left + (by ? " · " + by : "");
       box2.append(a, sm);
       const pill = document.createElement("span");
       pill.className = "pill";
@@ -1321,21 +1335,22 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
       const x = document.createElement("button");
       x.className = "xbtn";
       x.type = "button";
-      x.textContent = "Снять";
-      x.setAttribute("aria-label", "Снять роль " + info.n + " у " + r.username);
+      const xLabel = r.role === "banned" ? "Разбанить" : "Снять";
+      x.textContent = xLabel;
+      x.setAttribute("aria-label", (r.role === "banned" ? "Снять бан у " : "Снять роль " + info.n + " у ") + r.username);
       let sureTm;
       x.addEventListener("click", async () => {
         if (busy) return;
         if (!x.classList.contains("sure")){
           x.classList.add("sure"); x.textContent = "Точно?";
           clearTimeout(sureTm);
-          sureTm = setTimeout(() => { x.classList.remove("sure"); x.textContent = "Снять"; }, 3000);
+          sureTm = setTimeout(() => { x.classList.remove("sure"); x.textContent = xLabel; }, 3000);
           return;
         }
         clearTimeout(sureTm);
         lock(x, true);
-        try { await setRole({ p_role: "none", p_user_id: Number(r.user_id), p_username: r.username }); if (window.SealsToast) window.SealsToast("Роль снята у " + r.username); }
-        catch (err){ if (window.SealsToast) window.SealsToast(human(err)); x.classList.remove("sure"); x.textContent = "Снять"; }
+        try { await setRole({ p_role: "none", p_user_id: Number(r.user_id), p_username: r.username }); if (window.SealsToast) window.SealsToast((r.role === "banned" ? "Бан снят у " : "Роль снята у ") + r.username); }
+        catch (err){ if (window.SealsToast) window.SealsToast(human(err)); x.classList.remove("sure"); x.textContent = xLabel; }
         lock(x, false);
       });
       row.append(ini, box2, pill, x);
@@ -1366,7 +1381,7 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
       $("mrole").textContent = u.role === "default" ? "Seals User" : ROLES[u.role].n;
       busy = false;
       renderModal();
-      say($("mMsg"), k === "none" ? "Роль снята" : "Выдано: " + ROLES[k].n, true);
+      say($("mMsg"), k === "none" ? "Роль снята" : k === "banned" ? "Игрок заблокирован" : "Выдано: " + ROLES[k].n, true);
     } catch (err){
       busy = false;
       say($("mMsg"), human(err));

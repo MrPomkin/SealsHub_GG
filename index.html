@@ -611,8 +611,8 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
             <p class="sub">Впиши ник в Roblox и выбери роль. Скрипт игрока подхватит её за пару секунд.</p>
             <label class="field"><span>Ник в Roblox</span><input class="inp" id="aNick" placeholder="например, pomi_55" maxlength="20" required></label>
             <div class="chips" id="aChips"></div>
-            <label class="field" id="aDaysF"><span>Срок</span><select class="inp" id="aDays"><option value="">Навсегда</option><option value="1">1 день</option><option value="2.5">2.5 дня</option><option value="7">7 дней</option><option value="30">30 дней</option><option value="365">1 год</option><option value="h">Свой срок в часах…</option></select></label>
-            <label class="field" id="aHoursF" hidden><span>Сколько часов</span><input class="inp" id="aHours" type="number" inputmode="decimal" min="0.1" max="87600" step="any" placeholder="например, 5"></label>
+            <label class="field" id="aDaysF"><span>Срок</span><select class="inp" id="aDays"><option value="">Навсегда</option><option value="1">1 день</option><option value="2.5">2.5 дня</option><option value="7">7 дней</option><option value="30">30 дней</option><option value="365">1 год</option></select></label>
+            <label class="field" id="aHoursF"><span>Или свой срок в часах</span><input class="inp" id="aHours" type="number" inputmode="decimal" min="0" max="87600" step="any" placeholder="например, 5 или 0.5 — заменит срок выше"></label>
             <button class="rb yellow big wide" id="aGrantBtn" type="submit"><span id="aGrantTxt">Выдать</span></button>
             <div class="astatus" id="aGrantMsg"></div>
           </form>
@@ -1262,10 +1262,12 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
     $("aDaysF").hidden = grantRole === "none";
     syncHours();
   }
+  // своё число часов важнее пресета: пока поле заполнено, список срока неактивен
   function syncHours(){
-    $("aHoursF").hidden = grantRole === "none" || $("aDays").value !== "h";
+    $("aHoursF").hidden = grantRole === "none";
+    $("aDays").disabled = String($("aHours").value).trim() !== "";
   }
-  $("aDays").addEventListener("change", () => { syncHours(); if (!$("aHoursF").hidden) $("aHours").focus(); });
+  $("aHours").addEventListener("input", syncHours);
 
   async function setRole(params){
     const { data, error } = await sb.rpc("seals_admin_set_role2", params);
@@ -1281,8 +1283,9 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
     const nick = $("aNick").value.trim();
     if (!/^[A-Za-z0-9_]{3,20}$/.test(nick)){ say($("aGrantMsg"), human("bad name")); return; }
     let days = null, term = "";
-    if (grantRole !== "none" && $("aDays").value === "h"){
-      const h = Number(String($("aHours").value).replace(",", "."));
+    const hoursRaw = String($("aHours").value).trim();
+    if (grantRole !== "none" && hoursRaw){
+      const h = Number(hoursRaw.replace(",", "."));
       if (!(h > 0) || h > 87600){ say($("aGrantMsg"), "Впиши срок в часах: число больше 0, например 5 или 1.5"); $("aHours").focus(); return; }
       days = h / 24;
       term = " на " + h + " ч";
@@ -1299,6 +1302,7 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
         : grantRole === "banned" ? r.username + " заблокирован" + term
         : r.username + " теперь " + ROLES[grantRole].n + term, true);
       $("aNick").value = "";
+      $("aHours").value = ""; syncHours();
     } catch (err){
       say($("aGrantMsg"), human(err));
     }

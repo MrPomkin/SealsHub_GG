@@ -299,6 +299,11 @@ footer a{text-decoration:none}footer a:hover{text-decoration:underline}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 @media (max-width:520px){section{padding-block:64px}#chat{padding-top:48px}.chat{min-height:440px;box-shadow:5px 5px 0 var(--yellow)}.msg{max-width:94%}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}html{scroll-behavior:auto}.rv.pre{opacity:1;transform:none}.msgs{scroll-behavior:auto}}
+/* ===== SealsAI Premium: синяя тема и значок «Премиум» ===== */
+:root.prem{--yellow:#4cc3ff;--yellow-text:#0369a1}
+@media (prefers-color-scheme:dark){:root.prem:not([data-theme="light"]){--yellow-text:#7dd3fc}}
+:root.prem[data-theme="dark"]{--yellow-text:#7dd3fc}
+.prem-badge{display:inline-block;font-style:normal;margin-left:6px;font:400 7px var(--pixel);color:#04121c;background:#4cc3ff;padding:3px 5px;border:2px solid #000;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -363,7 +368,7 @@ footer a{text-decoration:none}footer a:hover{text-decoration:underline}
         <div class="chat" id="chatBox">
           <div class="chat-bar">
             <div class="chat-ava" id="barAva"></div>
-            <div class="chat-who"><b>SealsAI</b><span><i></i><em id="aiState">онлайн</em></span></div>
+            <div class="chat-who"><b>SealsAI <i class="prem-badge" id="premBadge" hidden>Премиум</i></b><span><i></i><em id="aiState">онлайн</em></span></div>
             <button class="ibtn" id="clearBtn" type="button" aria-label="Очистить чат"><svg viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 0h2v1h3v1H0V1h3zM1 3h6v5H1zM2 4v3h1V4zm3 0v3h1V4z"/></svg><span class="lbl">Очистить</span></button>
           </div>
           <div class="msgs-wrap">
@@ -1018,6 +1023,20 @@ window.SealsMotion = (() => {
     io3.observe(chat);
   }
 
+  // --- SealsAI Premium: синяя тема и значок «Премиум» (статус знает сервер, тут только запоминаем) ---
+  function setPrem(on){
+    on = !!on;
+    document.documentElement.classList.toggle("prem", on);
+    const pb = document.getElementById("premBadge"); if (pb) pb.hidden = !on;
+    store.set("sh_ai_prem", on);
+  }
+  setPrem(!!store.get("sh_ai_prem", false));
+  setTimeout(() => {
+    const slug = store.get("sh_ai_slug", null) || "quick-service";
+    fetch(SB + "/functions/v1/" + slug, { method: "POST", headers: { "apikey": KEY, "Content-Type": "application/json" }, body: JSON.stringify({ device, intent: "status" }) })
+      .then(r => r.ok ? r.json() : null).then(d => { if (d && typeof d.premium === "boolean") setPrem(d.premium); }).catch(() => {});
+  }, 1200);
+
   // --- запрос к серверу: пробуем адреса по очереди и запоминаем рабочий ---
   async function aiPost(messages){
     const saved = store.get("sh_ai_slug", null);
@@ -1036,6 +1055,8 @@ window.SealsMotion = (() => {
         clearTimeout(tm);
         let data = {};
         try { data = await r.json(); } catch {}
+        if (data && typeof data.premium === "boolean") setPrem(data.premium);
+        if (data && Array.isArray(data.actions) && data.actions.includes("premium_on")){ toast("SealsAI Premium активирован 💙"); }
         if (r.status === 404 && !data.error){ last = "http_404"; continue; }
         if (r.status === 401){ last = "http_401"; continue; }
         store.set("sh_ai_slug", slug);
@@ -1099,6 +1120,8 @@ window.SealsMotion = (() => {
     toBottom(true);
 
     const res = await aiPost(payload());
+    history.forEach(m => { m.content = String(m.content).replace(/\b[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}\b/g, "🔑 код скрыт"); });
+    store.set("sh_ai_chat", history);
     typing.m.remove();
     think.classList.remove("show");
     lockLook = null; lookAll();

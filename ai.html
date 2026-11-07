@@ -1024,17 +1024,20 @@ window.SealsMotion = (() => {
   }
 
   // --- SealsAI Premium: синяя тема и значок «Премиум» (статус знает сервер, тут только запоминаем) ---
-  function setPrem(on){
+  function setPrem(on, name){
     on = !!on;
     document.documentElement.classList.toggle("prem", on);
-    const pb = document.getElementById("premBadge"); if (pb) pb.hidden = !on;
+    if (typeof name === "string" || !on) store.set("sh_ai_prem_name", on ? name : "");
+    const nm = store.get("sh_ai_prem_name", "") || "";
+    const pb = document.getElementById("premBadge");
+    if (pb) { pb.hidden = !on; pb.textContent = nm && nm !== "Premium" ? nm : "Премиум"; }
     store.set("sh_ai_prem", on);
   }
   setPrem(!!store.get("sh_ai_prem", false));
   setTimeout(() => {
     const slug = store.get("sh_ai_slug", null) || "quick-service";
     fetch(SB + "/functions/v1/" + slug, { method: "POST", headers: { "apikey": KEY, "Content-Type": "application/json" }, body: JSON.stringify({ device, intent: "status" }) })
-      .then(r => r.ok ? r.json() : null).then(d => { if (d && typeof d.premium === "boolean") setPrem(d.premium); }).catch(() => {});
+      .then(r => r.ok ? r.json() : null).then(d => { if (d && typeof d.premium === "boolean") setPrem(d.premium, d.premium_name); }).catch(() => {});
   }, 1200);
 
   // --- запрос к серверу: пробуем адреса по очереди и запоминаем рабочий ---
@@ -1055,7 +1058,7 @@ window.SealsMotion = (() => {
         clearTimeout(tm);
         let data = {};
         try { data = await r.json(); } catch {}
-        if (data && typeof data.premium === "boolean") setPrem(data.premium);
+        if (data && typeof data.premium === "boolean") setPrem(data.premium, data.premium_name);
         if (data && Array.isArray(data.actions) && data.actions.includes("premium_on")){ toast("SealsAI Premium активирован 💙"); }
         if (r.status === 404 && !data.error){ last = "http_404"; continue; }
         if (r.status === 401){ last = "http_401"; continue; }

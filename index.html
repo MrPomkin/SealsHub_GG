@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<script>/* подстройка под экран: на больших и ультрашироких мониторах всё масштабируется, на узких телефонах чуть уменьшается */
+(function(){var r=document.documentElement;function fit(){var w=innerWidth,h=innerHeight,z=1;if(w>=1500)z=Math.min(w/1440,h/860);else if(w<360)z=w/360;z=Math.max(.85,Math.min(2.6,z));r.style.setProperty("--fit",z.toFixed(3));r.dataset.screen=w/h>2.1?"ultrawide":w>=1500?"large":w<=640?"phone":"normal"}fit();addEventListener("resize",fit);addEventListener("orientationchange",fit)})();</script>
+
 <title>Seals Hub</title>
 <meta name="description" content="Seals Hub — скрипт-хаб для Murder Mystery 2. ESP, анимации, 15 языков. Запуск через Delta.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +38,9 @@
   --ok:#4ade80; --err:#f87171;
   --pix1:#1a1a1a; --pix2:#2a2a2a; --pix3:#333333; --pix4:#111111; color-scheme:dark}
 
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{--fit:1}
+nav.top,main,footer,.modal>*,#toast,#fab{zoom:var(--fit)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -686,17 +693,19 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
     }
     if (!fxOn){ fxOn = true; requestAnimationFrame(fxLoop); }
   }
-  function fxLoop(){
+  let fxLast = 0;
+  function fxLoop(now){
+    const k = fxLast ? Math.min(3, (now - fxLast) / 16.667) : 1; fxLast = now;   // одинаково на 60, 144 и 240 Гц
     fxc.clearRect(0, 0, innerWidth, innerHeight);
     sparks = sparks.filter(p => p.life > 0);
     for (const p of sparks){
-      p.x += p.vx; p.y += p.vy; p.vy += .25; p.life -= .03;
+      p.x += p.vx * k; p.y += p.vy * k; p.vy += .25 * k; p.life -= .03 * k;
       fxc.globalAlpha = Math.max(0, p.life);
       fxc.fillStyle = p.c;
       fxc.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s);
     }
     fxc.globalAlpha = 1;
-    if (sparks.length) requestAnimationFrame(fxLoop); else { fxOn = false; fxc.clearRect(0, 0, innerWidth, innerHeight); }
+    if (sparks.length) requestAnimationFrame(fxLoop); else { fxOn = false; fxLast = 0; fxc.clearRect(0, 0, innerWidth, innerHeight); }
   }
   document.addEventListener("click", e => {
     const b = e.target.closest(".rb");
@@ -752,11 +761,12 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
   // ===== Pixel Background (21st.dev · scrollxui/hero-with-pixelbackground) =====
   (() => {
     const cv = $("pix"), ctx = cv.getContext("2d");
-    const GAP = 6;
+    let GAP = 6, last = 0;
     let cells = [], w = 0, h = 0, t0 = performance.now(), running = false, visible = true;
     function setup(){
       const d = Math.min(devicePixelRatio || 1, 2);
       w = cv.clientWidth; h = cv.clientHeight;
+      GAP = Math.max(6, Math.ceil(Math.sqrt(w * h / 22000)));
       cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0);
       const cols = [tok("--pix1"), tok("--pix2"), tok("--pix3"), tok("--pix4")];
       cells = [];
@@ -766,14 +776,15 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
     }
     function frame(now){
       const t = now - t0;
+      const k = last ? Math.min(3, (now - last) / 16.667) : 1; last = now;
       ctx.clearRect(0, 0, w, h);
       for (const p of cells){
         if (!still && t < p.d) continue;
-        if (still) p.s = p.max; else if (p.s < p.max) p.s = Math.min(p.max, p.s + .12); else p.ph += p.sp;
+        if (still) p.s = p.max; else if (p.s < p.max) p.s = Math.min(p.max, p.s + .12 * k); else p.ph += p.sp * k;
         const s = still ? p.s : p.s * (.75 + .25 * Math.sin(p.ph));
         ctx.fillStyle = p.c; ctx.fillRect(p.x + (GAP - s) / 2, p.y + (GAP - s) / 2, s, s);
       }
-      if (!still && visible) requestAnimationFrame(frame); else running = false;
+      if (!still && visible) requestAnimationFrame(frame); else { running = false; last = 0; }
     }
     function start(){ if (!running){ running = true; requestAnimationFrame(frame); } }
     setup(); start();

@@ -1098,7 +1098,8 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
   document.addEventListener("visibilitychange", () => { if (!document.hidden) loadOnline(); });
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- supabase-js: точная версия + проверка целостности (SRI) — подменённый файл с CDN браузер не выполнит -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script>
 (() => {
   // ===== админ-панель: выдача ролей =====

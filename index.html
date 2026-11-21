@@ -586,7 +586,7 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
 
       <form class="acard alogin" id="aLogin" hidden autocomplete="on">
         <h3>Вход для админа</h3>
-        <p class="sub">Почта и пароль от аккаунта Supabase, потом код 2FA.</p>
+        <p class="sub">Почта и пароль от аккаунта администратора, потом код 2FA.</p>
         <label class="field"><span>Почта</span><input class="inp" id="aEmail" type="email" autocomplete="username" required></label>
         <label class="field"><span>Пароль</span><input class="inp" id="aPass" type="password" autocomplete="current-password" required></label>
         <button class="rb yellow big wide" id="aLoginBtn" type="submit"><span>Войти</span></button>
@@ -1098,12 +1098,12 @@ body:has(.modal.open) .fab{opacity:0;pointer-events:none}
   document.addEventListener("visibilitychange", () => { if (!document.hidden) loadOnline(); });
 })();
 </script>
-<!-- supabase-js: точная версия + проверка целостности (SRI) — подменённый файл с CDN браузер не выполнит -->
+<!-- Библиотека входа: точная версия + проверка целостности (SRI) — подменённый файл с CDN браузер не выполнит -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script>
 (() => {
   // ===== админ-панель: выдача ролей =====
-  // Безопасность держится на Supabase: функции проверяют вход + 2FA + список админов.
+  // Безопасность держится на сервере: функции проверяют вход + 2FA + список админов.
   // Панель видна только по ссылке с #admin.
   const SB = "https://esrtcgptxemaphbteokx.supabase.co";
   const KEY = "sb_publishable_WQqiUsZmQwNnO1YeRpbm5g_voABCYox";
